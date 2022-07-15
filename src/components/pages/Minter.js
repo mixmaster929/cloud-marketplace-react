@@ -3,7 +3,7 @@ import {
   connectWallet,
   getCurrentWalletConnected,
   mintNFT,
-} from "../../core/nft/interact";
+} from "../../core/contracts/mint/interact";
 import { createGlobalStyle } from 'styled-components';
 import ColumnNewMint from '../components/ColumnNewMint';
 import api from "../../core/api";

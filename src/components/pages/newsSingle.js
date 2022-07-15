@@ -50,7 +50,6 @@ const NewsSingle = ({ postId }) => {
     const commentsState = useSelector(selectors.commentsState);
 
     const blogPosts = blogsState.data ? blogsState.data : {};
-    console.log(blogPosts);
     const recentPosts = recentPostsState.data ? recentPostsState.data : [];
     const tags = tagsState.data ? tagsState.data : [];
     const comments = commentsState.data ? commentsState.data.comments : [];

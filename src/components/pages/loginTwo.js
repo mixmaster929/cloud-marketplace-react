@@ -103,7 +103,6 @@ const Logintwo = () => {
           validateOnMount={validationSchema.isValidSync(initialValues)}
           onSubmit={async (values, { setSubmitting, resetForm }) => {
             // const submitData = pick(values, [...requiredFields]);
-            console.log(values)
             setSubmitting(true);
             await handleSubmitForm(values);
             setSubmitting(false);

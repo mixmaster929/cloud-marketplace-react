@@ -14,7 +14,24 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const GlobalStyles = createGlobalStyle`
   header#myHeader.navbar.white {
-    background: #fff;
+    background: #403f83;
+    border-bottom: solid 1px #403f83;
+  }
+  header#myHeader.navbar .search #quick_search{
+    color: #fff;
+    background: rgba(255, 255, 255, .1);
+  }
+  header#myHeader.navbar.white .btn, .navbar.white a, .navbar.sticky.white a{
+    color: #fff;
+  }
+  header#myHeader .dropdown-toggle::after{
+    color: rgba(255, 255, 255, .5);
+  }
+  header#myHeader .logo .d-block{
+    display: none !important;
+  }
+  header#myHeader .logo .d-none{
+    display: block !important;
   }
   .mainside{
     .connect-wal{
@@ -33,10 +50,10 @@ const GlobalStyles = createGlobalStyle`
       background: #403f83;
     }
     .navbar .menu-line, .navbar .menu-line1, .navbar .menu-line2{
-      background: #111;
+      background: #fff;
     }
     .item-dropdown .dropdown a{
-      color: #111 !important;
+      color: #fff !important;
     }
   }
 `;
@@ -83,7 +100,7 @@ const Profile = () => {
 
   const handleSubmitForm = async (data) => {
     const requestURL = authorUrl(authorId);
-    await request(requestURL, { method: 'PUT', headers: {Authorization: `Bearer ${jwt}`}, body: { data: data } })
+    await request(requestURL, { method: 'PUT', body: { data: data } })
       .then((response) => {
         // console.log("handleSubmitForm=>", response)
         // redirectUser(`/Author/${authorId}`);
@@ -110,8 +127,7 @@ const Profile = () => {
         "Content-Type": "multipart/form-data"
       }
     }).then(res => {
-      // redirectUser(`/users/${authorId}/edit`);
-      console.log(res.data.data);
+      console.log(res);
     }).catch(err => {
       console.log(err)
     });
@@ -150,7 +166,7 @@ const Profile = () => {
   return (
     <div>
       <GlobalStyles />
-      <section id='profile_banner' className='jumbotron breadcumb no-bg' style={{ backgroundImage: `url(${api.baseUrl + (author && author.banner && author.banner.url ? author.banner.url : '/uploads/4_1ec08f99e2.jpg')})` }}>
+      <section id='profile_banner' className='jumbotron breadcumb no-bg' style={{ backgroundImage: `url(${(author && author.banner != null? (api.publicUrl + "/uploads/profiles/" + author.banner) : '/uploads/4_1ec08f99e2.jpg')})` }}>
         <div className='mainbreadcumb'>
         </div>
       </section>

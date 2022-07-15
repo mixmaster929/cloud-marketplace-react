@@ -63,6 +63,24 @@ export const getComments = asyncAction(
     'nft/GET_COMMENTS_FAIL'
 )();
 
+export const getCategoryList = asyncAction(
+    'nft/GET_CATEGORY_LIST',
+    'nft/GET_CATEGORY_LIST_SUCCESS',
+    'nft/GET_CATEGORY_LIST_FAIL'
+)();
+
+export const getCollectionList = asyncAction(
+    'nft/GET_COLLECTION_LIST',
+    'nft/GET_COLLECTION_LIST_SUCCESS',
+    'nft/GET_COLLECTION_LIST_FAIL'
+)();
+
+export const getNftsList = asyncAction(
+    'nft/GET_NFTS_LIST',
+    'nft/GET_NFTS_LIST_SUCCESS',
+    'nft/GET_NFTS_LIST_FAIL'
+)();
+
 export const clearNfts = action('nft/CLEAR_ALL_NFTS')();
 export const clearFilter = action('nft/CLEAR_FILTER')();
 export const filterCategories = action('nft/FILTER_CATEGORIES')();

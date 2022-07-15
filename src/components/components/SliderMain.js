@@ -2,6 +2,8 @@ import React from 'react';
 import Reveal from 'react-awesome-reveal';
 import { keyframes } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
 const fadeInUp = keyframes`
   0% {
     opacity: 0;
@@ -25,6 +27,7 @@ const fadeIn = keyframes`
 
 const Slidermain = () => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
   return (
     <div className="container">
@@ -32,20 +35,20 @@ const Slidermain = () => {
         <div className="col-md-6">
           <div className="spacer-single"></div>
           <Reveal className='onStep' keyframes={fadeInUp} delay={0} duration={600} triggerOnce>
-            <h6 className=""><span className="text-uppercase color">Gigaland Market</span></h6>
+            <h6 className=""><span className="text-uppercase color">{t('title1')}</span></h6>
           </Reveal>
           <div className="spacer-10"></div>
           <Reveal className='onStep' keyframes={fadeInUp} delay={300} duration={600} triggerOnce>
-            <h1 className="">Create, sell or collect digital items.</h1>
+            <h1 className="">{t('title2')}</h1>
           </Reveal>
           <Reveal className='onStep' keyframes={fadeInUp} delay={600} duration={600} triggerOnce>
             <p className=" lead">
-              Unit of data stored on a digital ledger, called a blockchain, that certifies a digital asset to be unique and therefore not interchangeable
+            {t('title3')}
             </p>
           </Reveal>
           <div className="spacer-10"></div>
           <Reveal className='onStep' keyframes={fadeInUp} delay={800} duration={900} triggerOnce>
-            <span onClick={() => navigate('/explore')} className="btn-main lead">Explore</span>
+            <span onClick={() => navigate('/explore/new_signings/0')} className="btn-main lead">{t('explore')}</span>
             <div className="mb-sm-30"></div>
           </Reveal>
         </div>

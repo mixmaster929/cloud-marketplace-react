@@ -62,6 +62,9 @@ export default function request(
     options.headers = Object.assign(
       {
         'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Accept': "application/json"
+
       },
       options.headers,
       {}

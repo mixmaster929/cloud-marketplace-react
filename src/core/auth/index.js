@@ -101,10 +101,8 @@ const auth = {
   },
 };
 
-export const loginUrl = `${api.baseUrl}/api/auth/local`;
-// export const registerUrl = `${api.baseUrl}/api/auth/local/register`;
+export const loginUrl = `${api.localbaseUrl}/auth/login`;
 export const registerUrl = `${api.localbaseUrl}/auth/register`;
 export const authorUrl = (authorId) => `${api.localbaseUrl}/users/${authorId}`;
-export const authors = `${api.localbaseUrl}/users`;
 
 export default auth;

@@ -1,12 +1,14 @@
 import React from 'react';
 import SliderMain from '../components/SliderMain';
 import FeatureBox from '../components/FeatureBox';
-import CarouselCollectionRedux from '../components/CarouselCollectionRedux';
+import NewCardCollectionRedux from '../components/CarouselCollectionRedux';
 import CarouselNewRedux from '../components/CarouselNewRedux';
 import AuthorListRedux from '../components/AuthorListRedux';
 import Catgor from '../components/Catgor';
 import Footer from '../components/footer';
 import { createGlobalStyle } from 'styled-components';
+import { useTranslation } from "react-i18next";
+import { useNavigate } from 'react-router-dom';
 
 const GlobalStyles = createGlobalStyle`
   header#myHeader.navbar.sticky.white {
@@ -38,6 +40,23 @@ const GlobalStyles = createGlobalStyle`
       align-items: center;
     }
   }
+  .btn-viewall{
+    background-color: rgb(0, 154, 213);
+    // display: block;
+    width: max-content;
+    text-align: center;
+    color: #fff !important;
+    // background: #FC4118;
+    border-radius: 25px;
+    letter-spacing: normal;
+    outline: 0;
+    font-weight: 800;
+    text-decoration: none;
+    // padding: 8px 40px;
+    font-size: 14px;
+    border: none
+    // background-color: #FC4118;
+  }
   @media only screen and (max-width: 1199px) {
     .navbar{
       background: #403f83;
@@ -51,73 +70,91 @@ const GlobalStyles = createGlobalStyle`
   }
 `;
 
-const home= () => (
-  <div>
-    <GlobalStyles/>
-      <section className="jumbotron breadcumb no-bg h-vh" style={{backgroundImage: `url(${'./img/bg-shape-1.jpg'})`}}>
-         <SliderMain/>
-      </section>
+const Home = () => {
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const newCards = (e) => {
+    navigate("/explore/new_signings/0");
+  }
 
-      <section className='container no-top no-bottom'>
-        <FeatureBox/>
-      </section>
+  const getBundles = () => {
 
-      <section className='container no-bottom'>
-        <div className='row'>
-          <div className='col-lg-12'>
-            <div className='text-center'>
-              <h2>Hot Collections</h2>
-              <div className="small-border"></div>
+  }
+
+  const bestDeals = () => {
+
+  }
+
+  return(
+    <div>
+      <GlobalStyles/>
+        <section className="jumbotron breadcumb no-bg h-vh" style={{backgroundImage: `url(${'./img/bg-shape-1.jpg'})`}}>
+          <SliderMain/>
+        </section>
+
+        <section className='container no-top no-bottom'>
+          <FeatureBox/>
+        </section>
+
+        <section className='container no-bottom'>
+          <div className='row'>
+            <div className='col-lg-12'>
+              <div className='text-center'>
+                <h2>{t('new_cards')}</h2><input type="button" className='btn-viewall' onClick={(e) => newCards(e)} value="view all"></input>
+                <div className="small-border"></div>
+              </div>
+            </div>
+            <div className='col-lg-12'>
+              <NewCardCollectionRedux/>
             </div>
           </div>
-          <div className='col-lg-12'>
-            <CarouselCollectionRedux/>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <section className='container no-bottom'>
-        <div className='row'>
-          <div className='col-lg-12'>
-            <div className='text-center'>
-              <h2>New Items</h2>
-              <div className="small-border"></div>
+        <section className='container no-bottom'>
+          <div className='row'>
+            <div className='col-lg-12'>
+              <div className='text-center'>
+                <h2>{t('bundles')}</h2>
+                <input type="button" className='btn-viewall' onClick={(e) => getBundles} value="view all"></input>
+                <div className="small-border"></div>
+              </div>
+            </div>
+            <div className='col-lg-12'>
+              {/* <CarouselNewRedux/> */}
             </div>
           </div>
-          <div className='col-lg-12'>
-            <CarouselNewRedux/>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <section className='container no-bottom'>
-        <div className='row'>
-          <div className='col-lg-12'>
-            <div className='text-center'>
-              <h2>Top Sellers</h2>
-              <div className="small-border"></div>
+        <section className='container no-bottom'>
+          <div className='row'>
+            <div className='col-lg-12'>
+              <div className='text-center'>
+                <h2>{t('best_deals')}</h2>
+                <input type="button" className='btn-viewall' onClick={(e) => bestDeals} value="view all"></input>
+                <div className="small-border"></div>
+              </div>
+            </div>
+            <div className='col-lg-12'>
+            {/* <CarouselNewRedux/> */}
             </div>
           </div>
-          <div className='col-lg-12'>
-            <AuthorListRedux/>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <section className='container'>
-        <div className='row'>
-          <div className='col-lg-12'>
-            <div className='text-center'>
-              <h2>Browse by category</h2>
-              <div className="small-border"></div>
+        <section className='container'>
+          <div className='row'>
+            <div className='col-lg-12'>
+              <div className='text-center'>
+                <h2>Browse by category</h2>
+                <div className="small-border"></div>
+              </div>
             </div>
           </div>
-        </div>
-        <Catgor/>
-      </section>
+          <Catgor/>
+        </section>
 
-    <Footer />
+      <Footer />
 
-  </div>
-);
-export default home;
+    </div>
+  )
+};
+export default Home;

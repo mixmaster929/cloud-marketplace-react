@@ -1,10 +1,21 @@
 import { createSelector, createStructuredSelector } from "reselect";
 
+//categories
+export const categoriesState = (state) => state.categories.categoryList;
+
+//collections
+export const collectionState = (state) => state.collections.collectionList;
+
+//nfts
+export const nftState = (state) => state.NFT.nftList;
 
 //Store Selectors
 export const nftBreakdownState = (state) => state.NFT.nftBreakdown;
 export const nftShowcaseState = (state) => state.NFT.nftShowcase;
+
+//nft detail
 export const nftDetailState = (state) => state.NFT.nftDetail;
+
 export const hotCollectionsState = (state) => state.hotCollection.hotCollections;
 export const authorsState = (state) => state.authors.authorList;
 export const authorRankingsState = (state) => state.authors.authorRanking;

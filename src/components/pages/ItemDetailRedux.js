@@ -5,14 +5,13 @@ import Footer from '../components/footer';
 import { createGlobalStyle } from 'styled-components';
 import * as selectors from '../../store/selectors';
 import { fetchNftDetail } from "../../store/actions/thunks";
-/*import Checkout from "../components/Checkout";
-import Checkoutbid from "../components/Checkoutbid";*/
 import api from "../../core/api";
 import moment from "moment";
+import { useNavigate, useParams } from 'react-router-dom';
 
 const GlobalStyles = createGlobalStyle`
   header#myHeader.navbar.white {
-    background: #fff;
+    background: #403f83;
     border-bottom: solid 1px #dddddd;
   }
   .mr40{
@@ -25,23 +24,47 @@ const GlobalStyles = createGlobalStyle`
     background: #f6f6f6;
     color: #8364E2 !important;
   }
+  header#myHeader.navbar .search #quick_search{
+    color: #fff;
+    background: rgba(255, 255, 255, .1);
+  }
+  header#myHeader.navbar.white .btn, .navbar.white a, .navbar.sticky.white a{
+    color: #fff;
+  }
+  header#myHeader .dropdown-toggle::after{
+    color: rgba(255, 255, 255, .5);
+  }
+  header#myHeader .logo .d-block{
+    display: none !important;
+  }
+  header#myHeader .logo .d-none{
+    display: block !important;
+  }
+  .mainside{
+    .connect-wal{
+      display: none;
+    }
+    .logout{
+      display: flex;
+      align-items: center;
+    }
+  }
   @media only screen and (max-width: 1199px) {
     .navbar{
       background: #403f83;
     }
     .navbar .menu-line, .navbar .menu-line1, .navbar .menu-line2{
-      background: #111;
+      background: #fff;
     }
     .item-dropdown .dropdown a{
-      color: #111 !important;
+      color: #fff !important;
     }
   }
 `;
 
-const ItemDetailRedux = ({ nftId }) => {
+const ItemDetailRedux = () => {
+	const { nftId } = useParams();
 
-	console.log("nftId=>", nftId)
-	
 	const [openMenu0, setOpenMenu0] = React.useState(true);
 	const [openMenu, setOpenMenu] = React.useState(false);
 	const [openMenu1, setOpenMenu1] = React.useState(false);
@@ -73,8 +96,9 @@ const ItemDetailRedux = ({ nftId }) => {
 
 	const dispatch = useDispatch();
 	const nftDetailState = useSelector(selectors.nftDetailState);
-	const nft = nftDetailState.data ? nftDetailState.data : [];
-	console.log(nft);
+	const nft = nftDetailState.data ? nftDetailState.data[0] : [];
+	const users = nftDetailState.data ? nftDetailState.data[1] : [];
+	console.log("nft detail=>", nft)
 
 	const [openCheckout, setOpenCheckout] = React.useState(false);
 	const [openCheckoutbid, setOpenCheckoutbid] = React.useState(false);
@@ -89,11 +113,11 @@ const ItemDetailRedux = ({ nftId }) => {
 			<section className='container'>
 				<div className='row mt-md-5 pt-md-4'>
 					<div className="col-md-6 text-center">
-						<img src={nft.preview_image && api.baseUrl + nft.preview_image.url} className="img-fluid img-rounded mb-sm-30" alt="" />
+						<img src={nft.preview_image} className="img-fluid img-rounded mb-sm-30" alt="" />
 					</div>
 					<div className="col-md-6">
 						<div className="item_info">
-							{nft.item_type === 'on_auction' &&
+							{nft.status === 'on_auction' &&
 								<>
 									Auctions ends in
 									<div className="de_countdown">
@@ -115,12 +139,14 @@ const ItemDetailRedux = ({ nftId }) => {
 									<div className="item_author">
 										<div className="author_list_pp">
 											<span>
-												<img className="lazy" src={nft.author && api.baseUrl + nft.author.avatar.url} alt="" />
+												{/* nft creator image */}
+												<img className="lazy" src={nft.users && nft.users.avatar? (api.publicUrl + "/uploads/profiles/" + nft.users.avatar) : '../../img/author_single/author_thumbnail.jpg'} alt="" />
 												<i className="fa fa-check"></i>
 											</span>
 										</div>
 										<div className="author_list_info">
-											<span>{nft.author && nft.author.username}</span>
+											{/* nft creator username */}
+											<span>{nft.users && nft.users.username}</span>
 										</div>
 									</div>
 								</div>
@@ -129,12 +155,12 @@ const ItemDetailRedux = ({ nftId }) => {
 									<div className="item_author">
 										<div className="author_list_pp">
 											<span>
-												<img className="lazy" src={nft.author && api.baseUrl + nft.author.avatar.url} alt="" />
+												<img className="lazy" src={nft.preview_image} alt="" />
 												<i className="fa fa-check"></i>
 											</span>
 										</div>
 										<div className="author_list_info">
-											<span>{nft.author && nft.author.username}</span>
+											<span>{nft.title}</span>
 										</div>
 									</div>
 								</div>
@@ -145,9 +171,9 @@ const ItemDetailRedux = ({ nftId }) => {
 							<div className="de_tab">
 
 								<ul className="de_nav">
-									<li id='Mainbtn0' className="active"><span onClick={handleBtnClick0}>Details</span></li>
-									<li id='Mainbtn' ><span onClick={handleBtnClick}>Bids</span></li>
-									<li id='Mainbtn1' className=''><span onClick={handleBtnClick1}>History</span></li>
+									<li id='Mainbtn0' className="active"><span onClick={() => handleBtnClick0()}>Details</span></li>
+									<li id='Mainbtn' ><span onClick={() => handleBtnClick()}>Bids</span></li>
+									<li id='Mainbtn1' className=''><span onClick={() => handleBtnClick1()}>History</span></li>
 								</ul>
 
 								<div className="de_tab_content">
@@ -159,12 +185,12 @@ const ItemDetailRedux = ({ nftId }) => {
 													<div className="item_author">
 														<div className="author_list_pp">
 															<span>
-																<img className="lazy" src={nft.author && api.baseUrl + nft.author.avatar.url} alt="" />
+																<img className="lazy" src={nft.users && nft.users.avatar? (api.publicUrl + "/uploads/profiles/" + nft.users.avatar) : '../../img/author_single/author_thumbnail.jpg'} alt="" />
 																<i className="fa fa-check"></i>
 															</span>
 														</div>
 														<div className="author_list_info">
-															<span>{nft.author && nft.author.username}</span>
+															<span>{nft.users && nft.users.username}</span>
 														</div>
 													</div>
 												</div>
@@ -245,13 +271,13 @@ const ItemDetailRedux = ({ nftId }) => {
 												<div className="p_list" key={index}>
 													<div className="p_list_pp">
 														<span>
-															<img className="lazy" src={api.baseUrl + bid.author.avatar.url} alt="" />
+															<img className="lazy" src={nft.users && nft.users.avatar? (api.publicUrl + "/uploads/profiles/" + nft.users.avatar) : '../../img/author_single/author_thumbnail.jpg'} alt="" />
 															<i className="fa fa-check"></i>
 														</span>
 													</div>
 													<div className="p_list_info">
-														Bid {bid.author.id === nft.author.id && 'accepted'} <b>{bid.value} ETH</b>
-														<span>by <b>{bid.author.username}</b> at {moment(bid.created_at).format('L, LT')}</span>
+														Bid {(bid.user_id === nft.user_id) && 'accepted'} <b>{bid.value} ETH</b>
+														<span>by <b>{users? users.find(element => element.id === bid.user_id).username : nft.users.username}</b> at {moment(bid.created_at).format('L, LT')}</span>
 													</div>
 												</div>
 											))}
@@ -379,7 +405,6 @@ const ItemDetailRedux = ({ nftId }) => {
 					</div>
 				</div>
 			}
-
 		</div>
 	);
 }

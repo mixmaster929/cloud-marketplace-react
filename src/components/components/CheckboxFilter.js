@@ -1,106 +1,103 @@
-import React, { memo, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { categories, status, itemsType, collections } from './constants/filters';
-import { filterCategories, filterStatus, filterItemsType, filterCollections } from '../../store/actions';
+import React, { memo, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import * as selectors from '../../store/selectors';
+import { fetchCategoryList, fetchCollectionList, fetchAllNfts, fetchAllNftsByFilter } from "../../store/actions/thunks";
+import { createGlobalStyle } from 'styled-components';
+import LoadingSpinner from '../pages/LoadingSpinner'
+import { useNavigate, useParams } from 'react-router-dom';
+import request from '../../core/auth/request';
+import api from '../../../src/core/api'
 
-const CheckboxFilter = () => {
-    const dispatch = useDispatch();
+const GlobalStyles = createGlobalStyle`
+	.accordion-button{
+		padding: 0px;
+	}
+	.accordion-button:not(.collapsed){
+		color: #212529;
+		background-color: white;
+	}
+	.accordion-button:focus{
+		border-color: white;
+		box-shadow: none;
+	}
+	.accordion-body{
+		padding: 0px;
+	}
+	.filter-sub1{
+		border: none;
+		background: none;
+	}
+	.filter-sub1:active {
+		color: #0066FF !important;
+	}
+	@media only screen and (max-width: 1199px) {
 
-    const handleCategory = useCallback((event) => {
-        const { id } = event.target;
-        dispatch(filterCategories({value: id, singleSelect: false}));
-    }, [dispatch]);
-    
-    const handleStatus = useCallback((event) => {
-        const { id } = event.target;
-        dispatch(filterStatus({value: id, singleSelect: false}));
-    }, [dispatch]);
-    
-    const handleItemsType = useCallback((event) => {
-        const { id } = event.target;
-        dispatch(filterItemsType({value: id, singleSelect: false}));
-    }, [dispatch]);
+	}
+`;
+const CheckboxFilter = (filter) => {
+	const [isLoading, setLoading] = useState(false);
 
-    const handleCollections = useCallback((event) => {
-        const { id } = event.target;
-        dispatch(filterCollections({value: id, singleSelect: false}));
-    }, [dispatch]);
+	const dispatch = useDispatch();
 
-    return (
-        <>
-            <div className="item_filter_group">
-              <h4>Select Categories</h4>
-              <div className="de_form">
-                  { categories.map((item, index) => (
-                    <div className="de_checkbox" key={index}>
-                        <input 
-                            id={item.value} 
-                            name={item.value} 
-                            type="checkbox" 
-                            value={item.value}
-                            onChange={handleCategory}
-                        />
-                        <label htmlFor={item.value}>{item.label}</label>
-                    </div>
-                  ))}
-              </div>
-          </div>
+	const categoriesState = useSelector(selectors.categoriesState);
+	const categories = categoriesState.data ? categoriesState.data : {};
 
-          <div className="item_filter_group">
-              <h4>Status</h4>
-              <div className="de_form">
-                { status.map((item, index) => (
-                    <div className="de_checkbox" key={index}>
-                        <input 
-                            id={item.value} 
-                            name={item.value} 
-                            type="checkbox" 
-                            value={item.value}
-                            onChange={handleStatus}
-                        />
-                        <label htmlFor={item.value}>{item.label}</label>
-                    </div>
-                  ))}
-              </div>
-          </div>
+	const collectionState = useSelector(selectors.collectionState);
+	const nftCollections = collectionState.data ? collectionState.data : {};
+	
+	const nftState = useSelector(selectors.nftState);
+	const nfts = nftState.data ? nftState.data : {};
+	console.log("nfts=>", nfts)
+	const navigate = useNavigate();
+	const { category, id } = useParams();
 
-          <div className="item_filter_group">
-              <h4>Items Type</h4>
-              <div className="de_form">
-                { itemsType.map((item, index) => (
-                    <div className="de_checkbox" key={index}>
-                        <input 
-                            id={item.value} 
-                            name={item.value} 
-                            type="checkbox" 
-                            value={item.value}
-                            onChange={handleItemsType}
-                        />
-                        <label htmlFor={item.value}>{item.label}</label>
-                    </div>
-                ))}
-              </div>
-          </div>
+	useEffect(() => {
+		dispatch(fetchCategoryList());
+		dispatch(fetchCollectionList());
+		dispatch(fetchAllNfts());
+	}, [dispatch]);
 
-          <div className="item_filter_group">
-              <h4>Collections</h4>
-              <div className="de_form">
-              { collections.map((item, index) => (
-                    <div className="de_checkbox" key={index}>
-                        <input 
-                            id={item.value} 
-                            name={item.value} 
-                            type="checkbox" 
-                            value={item.value}
-                            onChange={handleCollections}
-                        />
-                        <label htmlFor={item.value}>{item.label}</label>
-                    </div>
-                ))}
-              </div>
-          </div>
-        </>
-    );
+	const getNftsWithCollectionId = (idk) => {
+		navigate("/explore/" + category + "/" + idk);
+	}
+	const [counters, setCounter] = useState(0)
+	const getNftCounters = async (collection_id) => {
+		const requestURL = api.localbaseUrl + '/getNftCounters';
+		const { data } = await request(requestURL, { method: 'POST', body: { collection_id } })
+		// setCounter(data)
+		// return data;
+	}
+	
+	return (
+		<div>
+			<GlobalStyles />
+			{isLoading ? <LoadingSpinner /> :
+				<div className="accordion accordion-flush" id="accordionExample">
+					{categories.length > 0 && categories.map((category, index) => (
+						<div className="accordion-item" key={index}>
+							<h2 className="accordion-header" id={index}>
+								<button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target={"#collapseOne_" + index} aria-expanded="true" aria-controls={"collapseOne_" + index}>
+									{/* categories */}
+									{category.name}
+								</button>
+							</h2>
+							<div id={"collapseOne_" + index} className="accordion-collapse collapse" aria-labelledby={index} data-bs-parent="#accordionExample">
+								<div className="accordion-body">
+									{/* collections */}
+									{nftCollections && nftCollections.length > 0 && nftCollections.map((each, index) => {
+										if(each.category_id === category.id){
+											const result = nfts && nfts.length>0 && nfts.find(element => element.collection_id === each.id);
+											const counter = result? new Array(result).length : 0
+											return (<button key={ index } className='filter-sub1' onClick={(e) => getNftsWithCollectionId(each.id)}>{each.name}<span className='filter-sub2'>{"(" + counter + ")"}</span></button>)
+										}
+									})}
+								</div>
+							</div>
+						</div>
+					))}
+				</div>}
+		</div>
+	);
 }
 
 export default memo(CheckboxFilter)

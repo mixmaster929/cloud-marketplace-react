@@ -1,11 +1,12 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Footer from '../components/footer';
 import { createGlobalStyle } from 'styled-components';
 import { Form, Formik, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import auth, { registerUrl, authorUrl } from '../../core/auth';
+import { registerUrl } from '../../core/auth';
 import request from '../../core/auth/request';
 import { useNavigate } from 'react-router-dom';
+import LoadingSpinner from './LoadingSpinner'
 
 const GlobalStyles = createGlobalStyle`
   header#myHeader.navbar.sticky.white {
@@ -27,6 +28,9 @@ const GlobalStyles = createGlobalStyle`
   }
   header#myHeader .logo .d-none{
     display: block !important;
+  }
+  .errormessage {
+    color: crimson;
   }
   @media only screen and (max-width: 1199px) {
     .navbar{
@@ -72,39 +76,24 @@ const initialValues = {
 
 const Register = () => {
 
+  const [isLoading, setLoading] = useState(false);    //component loading
   const navigate = useNavigate();
   const redirectUser = (path) => {
     navigate(path);
   }
 
   const handleSubmitForm = async (data) => {
-    console.log("register data =>", data)
+    setLoading(true);
     const requestURL = registerUrl;
     await request(requestURL, { method: 'POST', body: data })
       .then((response) => {
-        console.log(response)
-        auth.setToken(response.jwt, false);
-        auth.setUserInfo(response.user, false);
-        request(authorUrl(''), {
-          method: 'POST', body: {
-            data: {
-              username: response.user.username,
-              users_permissions_user: response.user.id,
-              social: '',
-              wallet: '',
-              followers: 0,
-              about: ''
-            }
-          }
-        })
-          .then((responseUser) => {
-            console.log('user response =>', responseUser);
-            redirectUser('/Profile/' + responseUser.data.id);
-          }).catch((err) => {
-            console.log(err);
-          })
+        if(response.success){
+          redirectUser(`/login`);
+        }
       }).catch((err) => {
-        console.log(err);
+        console.log(err)
+      }).finally(() => {
+        setLoading(false);
       });
   }
 
@@ -124,7 +113,7 @@ const Register = () => {
           </div>
         </div>
       </section>
-
+      {isLoading? <LoadingSpinner /> :
       <section className='container'>
         <div className="row">
 
@@ -139,11 +128,11 @@ const Register = () => {
               initialValues={initialValues}
               validateOnMount={validationSchema.isValidSync(initialValues)}
               onSubmit={async (values, { setSubmitting, resetForm }) => {
-                // const submitData = pick(values, [...requiredFields]);
-                console.log(values)
                 setSubmitting(true);
+                
                 await handleSubmitForm(values);
                 setSubmitting(false);
+                
                 resetForm();
               }}
             >
@@ -160,7 +149,8 @@ const Register = () => {
                           <div className="field-set">
                             <label>Email Address:</label>
                             <Field className="form-control" type="email" name="email" />
-                            <ErrorMessage name="email" component="div" />
+                            <ErrorMessage name="email" className="errormessage" component="div" />
+                            {/* { hasEmail && <span className='errormessage'>Email is already taken.</span> } */}
                           </div>
                         </div>
 
@@ -168,7 +158,8 @@ const Register = () => {
                           <div className="field-set">
                             <label>Choose a Username:</label>
                             <Field className="form-control" type="text" name="username" />
-                            <ErrorMessage name="username" component="div" />
+                            <ErrorMessage name="username" className="errormessage" component="div" />
+                            {/* { hasUsername && <span className='errormessage'>Username is already taken.</span> } */}
                           </div>
                         </div>
 
@@ -176,7 +167,7 @@ const Register = () => {
                           <div className="field-set">
                             <label>Password:</label>
                             <Field className="form-control" type="password" name="password" />
-                            <ErrorMessage name="password" component="div" />
+                            <ErrorMessage name="password" className="errormessage" component="div" />
                           </div>
                         </div>
 
@@ -184,7 +175,7 @@ const Register = () => {
                           <div className="field-set">
                             <label>Re-enter Password:</label>
                             <Field className="form-control" type="password" name="password_confirmation" />
-                            <ErrorMessage name="password_confirmation" component="div" />
+                            <ErrorMessage name="password_confirmation" className="errormessage" component="div" />
                           </div>
                         </div>
 
@@ -204,6 +195,7 @@ const Register = () => {
           </div>
         </div>
       </section>
+      }
 
       <Footer />
     </div>

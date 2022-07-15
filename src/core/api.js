@@ -13,24 +13,13 @@
 // }
 // file location: src/core/api.js
 const api = {
-    baseUrl: '/mock_data', // mock data base folder
+    // baseUrl: '/mock_data', // mock data base folder
     localbaseUrl: 'http://localhost:8000/api',
     publicUrl: 'http://localhost:8000',
-    nfts: '/nfts.json',
-    nftShowcases: '/nft_showcases.json',
-    authors: '/authors.json',
-    users: '/authors',
-    authorsSales: '/author_ranks.json',
-    hotCollections: '/hot-collections.json',
-    contactUs: '/contact-forms',
-    blogs: '/blog-posts',
-    recent: '/blog-posts/recent.json',
-    comments: '/blog-posts/comments.json',
-    tags: '/blog-posts/tags.json',
 }
-export const openseaApi = {
-    base: 'https://testnets.opensea.io',
-    api: 'https://testnets-api.opensea.io',
-}
+// export const openseaApi = {
+//     base: 'https://testnets.opensea.io',
+//     api: 'https://testnets-api.opensea.io',
+// }
 
 export default api;

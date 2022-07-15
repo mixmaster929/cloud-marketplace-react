@@ -1,8 +1,7 @@
 import { Axios, Canceler } from '../../../core/axios';
 import * as actions from '../../actions';
 import api from '../../../core/api';
-// import axios from "axios";
-import auth, { authorUrl, authors } from '../../../core/auth';
+import auth, { authorUrl } from '../../../core/auth';
 
 export const fetchAuthorList = (authorId) => async (dispatch) => {
 
@@ -10,20 +9,17 @@ export const fetchAuthorList = (authorId) => async (dispatch) => {
 
   try {
     const jwt = auth.getToken();
-    
-    console.log("action authorId=>", authorId);
-    let filter = authorId ? 'filters[id][$eq]='+authorId : '';
-    const requestURL = authorId? authorUrl(authorId) : authors;
-    console.log("requestURL=>", requestURL);
-    const { data } = await Axios.get(requestURL, {
-      headers: {
-				Authorization: `Bearer ${jwt}`,
-			},
-      cancelToken: Canceler.token,
-      params: {}
-    });
-    console.log("authorlist data=>", data);
-    dispatch(actions.getAuthorList.success(data.data));
+    const requestURL = authorUrl(authorId);
+    if (authorId) {
+      const { data } = await Axios.get(requestURL, {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+        cancelToken: Canceler.token,
+        params: {}
+      });
+      dispatch(actions.getAuthorList.success(data.data));
+    }
   } catch (err) {
     dispatch(actions.getAuthorList.failure(err));
   }

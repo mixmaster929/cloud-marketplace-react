@@ -1,6 +1,9 @@
 import { Axios, Canceler } from '../../../core/axios';
 import * as actions from '../../actions';
 import api from '../../../core/api';
+import auth from '../../../core/auth';
+
+const jwt = auth.getToken();
 
 export const fetchNftsBreakdown = (authorId, isMusic = false) => async (dispatch) => {
 
@@ -43,18 +46,63 @@ export const fetchNftShowcase = () => async (dispatch) => {
   }
 };
 
-export const fetchNftDetail = (nftId = 1) => async (dispatch) => {
-  console.log("data====>>>")
+export const fetchNftDetail = (nftId) => async (dispatch) => {
   dispatch(actions.getNftDetail.request(Canceler.cancel));
-  console.log("xxxxxx=>", `${api.baseUrl}${api.nfts}/${nftId}`)
   try {
-    const { data } = await Axios.get(`${api.baseUrl}${api.nfts}/${nftId}`, {
+    const requestURL = api.localbaseUrl + '/nftdetail/' + nftId;
+
+    const { data } = await Axios.get(requestURL, {
+      headers: {
+				Authorization: `Bearer ${jwt}`,
+			},
       cancelToken: Canceler.token,
       params: {}
     });
-    console.log("data=>>>", data)
-    dispatch(actions.getNftDetail.success(data));
+    dispatch(actions.getNftDetail.success(data.data));
   } catch (err) {
     dispatch(actions.getNftDetail.failure(err));
+  }
+};
+
+export const fetchAllNfts = () => async (dispatch) => {
+  dispatch(actions.getNftsList.request(Canceler.cancel));
+
+  try {
+    
+    const requestURL = api.localbaseUrl + '/nfts/';
+
+    const { data } = await Axios.get(requestURL, {
+      headers: {
+				Authorization: `Bearer ${jwt}`,
+			},
+      cancelToken: Canceler.token,
+      params: {}
+    });
+
+    dispatch(actions.getNftsList.success(data.data));
+  } catch (err) {
+    dispatch(actions.getNftsList.failure(err));
+  }
+};
+
+export const fetchAllNftsByFilter = (filter) => async (dispatch) => {
+
+  dispatch(actions.getNftsList.request(Canceler.cancel));
+
+  try {
+    const jwt = auth.getToken();
+    const requestURL = api.localbaseUrl + '/nfts/' + filter;
+
+    const { data } = await Axios.get(requestURL, {
+      headers: {
+				Authorization: `Bearer ${jwt}`,
+			},
+      cancelToken: Canceler.token,
+      params: {}
+    });
+
+    dispatch(actions.getNftsList.success(data.data));
+  } catch (err) {
+    dispatch(actions.getNftsList.failure(err));
   }
 };

@@ -51,7 +51,7 @@ const explore= () => (
 <div>
 <GlobalStyles/>
 
-  <section className='jumbotron breadcumb no-bg' style={{backgroundImage: `url(${'./img/background/subheader.jpg'})`}}>
+  {/* <section className='jumbotron breadcumb no-bg' style={{backgroundImage: `url(${'./img/background/subheader.jpg'})`}}>
     <div className='mainbreadcumb'>
       <div className='container'>
         <div className='row m-10-hor'>
@@ -61,7 +61,7 @@ const explore= () => (
         </div>
       </div>
     </div>
-  </section>
+  </section> */}
 
   <section className='container'>
         <div className='row'>
@@ -69,8 +69,8 @@ const explore= () => (
               <TopFilterBar />
           </div>
         </div>
-        {/* <ColumnNewRedux /> */}
-       <ColumnNewRedux showLoadMore = "true" shuffle = "false"  authorId = {1}/>
+        <ColumnNewRedux />
+       {/* <ColumnNewRedux showLoadMore = "true" shuffle = "false"  authorId = {1}/> */}
       </section>
 
 

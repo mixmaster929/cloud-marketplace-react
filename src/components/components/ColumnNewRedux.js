@@ -7,15 +7,11 @@ import NftCard from './NftCard';
 import NftMusicCard from './NftMusicCard';
 import { shuffleArray } from '../../store/utils';
 
-//react functional component
 const ColumnNewRedux = ({ showLoadMore = true, shuffle = false, authorId = null }) => {
-    // console.log("nft redux=>", authorId)
 
     const dispatch = useDispatch();
     const nftItems = useSelector(selectors.nftItems);
-    // console.log("nftItems=>", nftItems)
     const nfts = nftItems ? shuffle ? shuffleArray(nftItems) : nftItems : [];
-    // console.log("nfts=>", nfts)
     const [height, setHeight] = useState(0);
 
     const onImgLoad = ({target:img}) => {

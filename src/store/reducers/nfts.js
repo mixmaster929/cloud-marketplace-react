@@ -11,11 +11,19 @@ import {
 export const defaultState = {
   nftBreakdown: initEntityState(null),
   nftDetail: initEntityState(null),
-  nftShowcase: initEntityState(null)
+  nftShowcase: initEntityState(null),
+  nftList: initEntityState(null)
 };
 
 const states = (state = defaultState, action) => {
   switch (action.type) {
+    //new codes from laravel API
+    case getType(actions.getNftsList.request):
+      return { ...state, nftList: entityLoadingStarted(state.nftList, action.payload) };
+    case getType(actions.getNftsList.success):
+      return { ...state, nftList: entityLoadingSucceeded(state.nftList, action.payload) };
+    case getType(actions.getNftsList.failure):
+      return { ...state, nftList: entityLoadingFailed(state.nftList) };
     
     case getType(actions.getNftBreakdown.request):
       return { ...state, nftBreakdown: entityLoadingStarted(state.nftBreakdown, action.payload) };
@@ -26,10 +34,11 @@ const states = (state = defaultState, action) => {
     case getType(actions.getNftBreakdown.failure):
       return { ...state, nftBreakdown: entityLoadingFailed(state.nftBreakdown) };
     
+    // nft detail
     case getType(actions.getNftDetail.request):
       return { ...state, nftDetail: entityLoadingStarted(state.nftDetail, action.payload) };
     case getType(actions.getNftDetail.success):
-      return { ...state, nftDetail: entityLoadingSucceeded(state.nftDetail, action.payload, false) };
+      return { ...state, nftDetail: entityLoadingSucceeded(state.nftDetail, action.payload) };
     case getType(actions.getNftDetail.failure):
       return { ...state, nftDetail: entityLoadingFailed(state.nftDetail) };
     

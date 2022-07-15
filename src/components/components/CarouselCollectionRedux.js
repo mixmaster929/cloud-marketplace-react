@@ -1,40 +1,38 @@
-import React, { memo, useEffect } from "react";
+import React, { memo, useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 import Slider from "react-slick";
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { settings } from "./constants";
+import { settings, carouselCollection } from "./constants";
 import CustomSlide from "./CustomSlide";
 import * as selectors from '../../store/selectors';
-import { fetchHotCollections } from "../../store/actions/thunks";
-import api from "../../core/api";
+import { fetchAllNfts } from "../../store/actions/thunks";
 
 const CarouselCollectionRedux = () => {
+  
 
   const dispatch = useDispatch();
-  const hotCollectionsState = useSelector(selectors.hotCollectionsState);
-  const hotCollections = hotCollectionsState.data ? hotCollectionsState.data : [];
-
+  const nftState = useSelector(selectors.nftState);
+	const nfts = nftState.data ? nftState.data : {};
+  
   useEffect(() => {
-    dispatch(fetchHotCollections());
-}, [dispatch]);
+    const interval = setInterval(() => {
+      dispatch(fetchAllNfts());
+    }, 3000);
+		return () => clearInterval(interval);
+	}, [dispatch]);
 
   return (
-      <div className='nft'>
-        <Slider {...settings}>
-          { hotCollections && hotCollections.map((item, index) => (
-            <CustomSlide
-              key={index}
-              index={index + 1}
-              avatar={api.baseUrl + item.author.avatar.url}
-              banner={api.baseUrl + item.banner.url}
-              username={item.name}
-              uniqueId={item.unique_id}
-              collectionId={item.id}
-            />
-          ))}
-        </Slider>
-      </div>
+    <div className='nft'>
+      <Slider {...carouselCollection}>
+        {nfts && nfts.length > 0 && nfts.map((item, index) => (
+          <CustomSlide
+            key={index}
+            card={item}
+          />
+        ))}
+      </Slider>
+    </div>
   );
 }
 
