@@ -128,7 +128,7 @@ export const mintNFT = async (url, price, deadlinePreview, deadlinePreviewTimest
 export const approve = async () => {
   const mintContract = new web3.eth.Contract(mintContractABI, mintContractAddress);
   const tokenId = await totalSupplies();
-
+  console.log("tokenId=>", tokenId)
   const nftToken = await mintContract.methods.approve(marketBidAddress, tokenId).send({ from: window.ethereum.selectedAddress })
 
   return { "approve_success": nftToken.status, "approve_status": nftToken.transactionHash }

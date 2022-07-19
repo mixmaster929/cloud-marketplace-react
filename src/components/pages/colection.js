@@ -1,7 +1,13 @@
-import React, { memo } from "react";
+import React, { memo, useState, useEffect } from "react";
 import Footer from '../components/footer';
 import { createGlobalStyle } from 'styled-components';
 import { useNavigate } from "react-router-dom";
+import ColumnNewRedux  from '../components/ColumnNewRedux';
+import { fetchAllNftsByUser } from "../../store/actions/thunks";
+import LoadingSpinner from './LoadingSpinner';
+import * as selectors from '../../store/selectors';
+import { useSelector, useDispatch } from 'react-redux';
+import auth from '../../core/auth';
 
 const GlobalStyles = createGlobalStyle`
   header#myHeader.navbar.white {
@@ -68,7 +74,9 @@ const GlobalStyles = createGlobalStyle`
 `;
 
 const Colection = () => {
+  const [isLoading, setLoading] = useState(false)
 
+  const userInfo = auth.getUserInfo();
   const navigate = useNavigate();
 
   const [openMenu, setOpenMenu] = React.useState(true);
@@ -98,7 +106,7 @@ const Colection = () => {
         </div>
       </section>
 
-      <section className='container d_coll no-top no-bottom'>
+      {userInfo.email === "smart.topdev929@gmail.com" && <section className='container d_coll no-top no-bottom'>
         <div className='row'>
           <div className="col-md-12">
             <div className="d_profile">
@@ -114,7 +122,7 @@ const Colection = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section>}
 
       <section className='container no-top'>
         <div className='row'>
@@ -127,6 +135,16 @@ const Colection = () => {
             </div>
           </div>
         </div>
+        {openMenu && (  
+          <div id='zero1' className='onStep fadeIn'>
+            <ColumnNewRedux shuffle showLoadMore={true} userId={userInfo.id} itemType />
+          </div>
+        )}
+        {openMenu1 && ( 
+          <div id='zero2' className='onStep fadeIn'>
+            <ColumnNewRedux shuffle showLoadMore={true} userId={userInfo.id} />
+          </div>
+        )}
       </section>
       <Footer />
     </div>

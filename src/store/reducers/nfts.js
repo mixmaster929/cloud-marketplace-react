@@ -12,7 +12,10 @@ export const defaultState = {
   nftBreakdown: initEntityState(null),
   nftDetail: initEntityState(null),
   nftShowcase: initEntityState(null),
-  nftList: initEntityState(null)
+  nftList: initEntityState(null),
+  nftListByFilter: initEntityState(null),
+  nftListByFilter1: initEntityState(null),
+  nftListByUser: initEntityState(null),
 };
 
 const states = (state = defaultState, action) => {
@@ -24,7 +27,28 @@ const states = (state = defaultState, action) => {
       return { ...state, nftList: entityLoadingSucceeded(state.nftList, action.payload) };
     case getType(actions.getNftsList.failure):
       return { ...state, nftList: entityLoadingFailed(state.nftList) };
+
+    case getType(actions.getNftsListByFilter.request):
+      return { ...state, nftListByFilter: entityLoadingStarted(state.nftListByFilter, action.payload) };
+    case getType(actions.getNftsListByFilter.success):
+      return { ...state, nftListByFilter: entityLoadingSucceeded(state.nftListByFilter, action.payload) };
+    case getType(actions.getNftsListByFilter.failure):
+      return { ...state, nftListByFilter: entityLoadingFailed(state.nftListByFilter) };
     
+    case getType(actions.getNftsListByFilter1.request):
+      return { ...state, nftListByFilter1: entityLoadingStarted(state.nftListByFilter1, action.payload) };
+    case getType(actions.getNftsListByFilter1.success):
+      return { ...state, nftListByFilter1: entityLoadingSucceeded(state.nftListByFilter1, action.payload) };
+    case getType(actions.getNftsListByFilter1.failure):
+      return { ...state, nftListByFilter1: entityLoadingFailed(state.nftListByFilter1) };
+      
+    case getType(actions.getNftsListByUser.request):
+      return { ...state, nftListByUser: entityLoadingStarted(state.nftListByUser, action.payload) };
+    case getType(actions.getNftsListByUser.success):
+      return { ...state, nftListByUser: entityLoadingSucceeded(state.nftListByUser, action.payload) };
+    case getType(actions.getNftsListByUser.failure):
+      return { ...state, nftListByUser: entityLoadingFailed(state.nftListByUser) };
+
     case getType(actions.getNftBreakdown.request):
       return { ...state, nftBreakdown: entityLoadingStarted(state.nftBreakdown, action.payload) };
     case getType(actions.getNftBreakdown.success):

@@ -9,6 +9,14 @@ export const collectionState = (state) => state.collections.collectionList;
 //nfts
 export const nftState = (state) => state.NFT.nftList;
 
+//nfts by fitler
+export const nftStateByFilter = (state) => state.NFT.nftListByFilter;
+
+export const nftStateByFilter1 = (state) => state.NFT.nftListByFilter1;
+
+//nfts by user
+export const nftStateByUser = (state) => state.NFT.nftListByUser;
+
 //Store Selectors
 export const nftBreakdownState = (state) => state.NFT.nftBreakdown;
 export const nftShowcaseState = (state) => state.NFT.nftShowcase;

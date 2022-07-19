@@ -111,17 +111,19 @@ const ColectionCreation = () => {
   }
 
   const createCollection = async () => {
-    setLoading(true)
-    const userInfo = auth.getUserInfo();
-    const requestURL = api.localbaseUrl +'/collection';
-    await request(requestURL, { method: 'POST', body: {'user_id': userInfo.id, 'name': name, 'category_id': category}})
-    .then((response) => {
-        const { data } = response;
-        dispatch(fetchCategoryList());
-    }).catch((err) => {
-        console.log(err);
-    });
-    setLoading(false)
+    if(name !="" && category !=""){
+      setLoading(true)
+      const userInfo = auth.getUserInfo();
+      const requestURL = api.localbaseUrl +'/collection';
+      await request(requestURL, { method: 'POST', body: {'user_id': userInfo.id, 'name': name, 'category_id': category}})
+      .then((response) => {
+          const { data } = response;
+          dispatch(fetchCategoryList());
+      }).catch((err) => {
+          console.log(err);
+      });
+      setLoading(false)
+    }
   }
 
   return (

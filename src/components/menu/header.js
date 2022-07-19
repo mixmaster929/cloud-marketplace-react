@@ -15,8 +15,6 @@ import * as selectors from '../../../src/store/selectors';
 import { useSelector, useDispatch } from 'react-redux';
 import Select from 'react-select';
 import { useTranslation } from "react-i18next";
-// import GlobalPayment from '../components/globalpayment/index'
-
 
 const GlobalStyles = createGlobalStyle`
 .mainside a {
@@ -105,7 +103,7 @@ const Header = function ({ className }) {
   const authorId = userInfo ? userInfo.id : 0;
   const authorsState = useSelector(selectors.authorsState);
   const author = authorsState.data ? authorsState.data : null;
-
+  const defaultLanguage = localStorage.getItem("language");
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -123,6 +121,7 @@ const Header = function ({ className }) {
 
   const changeLanguage = (event) => {
     setLanguage(event.value)
+    localStorage.setItem("language", event.value);
     i18n.changeLanguage(event.value);
   };
 
@@ -283,13 +282,11 @@ const Header = function ({ className }) {
                               <i className="fa fa-pencil"></i>{t('settings')}
                             </span>
                           </li>
-                          {
-                            userInfo.email === "smart.topdev929@gmail.com" && <li>
-                              <span onClick={() => navigate('/collections')}>
-                                <i className="fa fa-medkit"></i>{t('collections')}
-                              </span>
-                            </li>
-                          }
+                          <li>
+                            <span onClick={() => navigate('/collections')}>
+                              <i className="fa fa-medkit"></i>{t('collections')}
+                            </span>
+                          </li>
                           {
                             userInfo.email === "smart.topdev929@gmail.com" && <li>
                               <span onClick={() => navigate('/create')}>
@@ -312,7 +309,7 @@ const Header = function ({ className }) {
                     }
                   </div>
                   <div className="multi-language">
-                    <Select id="multi-language" onChange={changeLanguage} options={setLanguages} defaultValue={setLanguages[0]} />
+                    <Select id="multi-language" onChange={changeLanguage} options={setLanguages} defaultValue={defaultLanguage? setLanguages.find(item => item.value === defaultLanguage) : setLanguages[0] } />
                   </div>
                 </div>)
               }

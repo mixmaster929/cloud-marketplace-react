@@ -101,7 +101,7 @@ const Createpage = () => {
 
   const collectionState = useSelector(selectors.collectionState);
   const collections = collectionState.data ? collectionState.data : {};
-  const [collectionOptions, setCollectionOptions] = useState([])
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -109,17 +109,11 @@ const Createpage = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    collections.length > 0 && collections.map((collection) => {
-      setCollectionOptions((todo) => [...todo, { label: collection.name, value: collection.id }])
-    })
-  }, [collections]);
-
-  useEffect(() => {
-    if(collectionOptions.length>0)
+    if(collections.length>0)
     {
-      setCollection(collectionOptions[0].value)
+      setCollection(collections[0].value)
     }
-  }, [collectionOptions]);
+  }, [collections]);
 
   const unlockClick = () => {
     setIsActive(true);
@@ -360,8 +354,8 @@ const Createpage = () => {
                   <div className="spacer-10"></div>
 
                   <h5>Collection</h5>
-                  {collectionOptions && collectionOptions.length>0 &&
-                  <Select name="item_collection" id="item_collection" options={collectionOptions} onChange={(e) => onChangeCollection(e)} defaultValue={collectionOptions[0]} />}
+                  {collections && collections.length>0 &&
+                  <Select name="item_collection" id="item_collection" options={collections} onChange={(e) => onChangeCollection(e)} defaultValue={collections[0]} />}
                   <div className="spacer-10"></div>
 
                   <div className="switch-with-title">

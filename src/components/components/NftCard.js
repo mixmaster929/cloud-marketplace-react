@@ -15,8 +15,14 @@ const Outer = styled.div`
 
 //react functional component
 const NftCard = ({ nft, className = 'd-item col-lg-3 col-md-6 col-sm-6 col-xs-12 mb-4', clockTop = true, height, onImgLoad }) => {
+    const timestamp1 = Number(nft.deadline_timestamp);
+    const timestamp2 = Math.round(new Date().getTime() / 1000);
+    if(timestamp1 - timestamp2 < 0)
+    clockTop = false
+
     const navigate = useNavigate();
     const navigateTo = (link) => {
+        console.log("link=>", link)
         navigate(link);
     }
 
@@ -34,28 +40,28 @@ const NftCard = ({ nft, className = 'd-item col-lg-3 col-md-6 col-sm-6 col-xs-12
                         <Clock deadline={nft.deadline} />
                     </div>
                 }
-                { nft.author && nft.author.avatar && nft.author.avatar.url &&
+                {/* { nft.users && nft.users.avatar && */}
                     <div className="author_list_pp">
                         <span onClick={()=> navigateTo(nft.author_link)}>                                    
-                            <img className="lazy" src={api.baseUrl + nft.author.avatar.url} alt=""/>
+                            <img className="lazy" src={nft.users && nft.users.avatar? (api.publicUrl + "/uploads/profiles/" + nft.users.avatar) : '../../img/author_single/author_thumbnail.jpg'} alt=""/>
                             <i className="fa fa-check"></i>
                         </span>
                     </div>
-                }
+                {/* } */}
                 <div className="nft__item_wrap" style={{height: `${height}px`}}>
                 <Outer>
                     <span>
-                        <img onLoad={onImgLoad} src={api.baseUrl + nft.preview_image.url} className="lazy nft__item_preview" alt=""/>
+                        <img onLoad={onImgLoad} src={nft.preview_image} className="lazy nft__item_preview" alt=""/>
                     </span>
                 </Outer>
                 </div>
-                { nft.deadline && !clockTop &&
+                {/* { nft.deadline && !clockTop &&
                     <div className="de_countdown">
                         <Clock deadline={nft.deadline} />
                     </div>
-                }
+                } */}
                 <div className="nft__item_info">
-                    <span onClick={() => navigateTo(`${nft.nft_link}/${nft.id}`)}>
+                    <span onClick={() => navigateTo("/ItemDetail/" + `${nft.id}`)}>
                         <h4>{nft.title}</h4>
                     </span>
                     { nft.status === 'has_offers' ? (
@@ -72,7 +78,7 @@ const NftCard = ({ nft, className = 'd-item col-lg-3 col-md-6 col-sm-6 col-xs-12
                         )
                     }
                     <div className="nft__item_action">
-                        <span onClick={() => navigateTo(`${nft.bid_link}/${nft.id}`)}>{ nft.status === 'on_auction' ? 'Place a bid' : 'Buy Now' }</span>
+                        <span onClick={() => navigateTo("/ItemDetail/" + `${nft.id}`)}>{ nft.status === 'on_auction' ? 'Place a bid' : 'Buy Now' }</span>
                     </div>
                     <div className="nft__item_like">
                         <i className="fa fa-heart"></i><span>{nft.likes}</span>

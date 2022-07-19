@@ -4,14 +4,18 @@ import * as selectors from '../../store/selectors';
 import * as actions from '../../store/actions/thunks';
 import { clearNfts, clearFilter } from '../../store/actions';
 import NftCard from './NftCard';
-import NftMusicCard from './NftMusicCard';
 import { shuffleArray } from '../../store/utils';
+import LoadingSpinner from '../pages/LoadingSpinner';
 
-const ColumnNewRedux = ({ showLoadMore = true, shuffle = false, authorId = null }) => {
+const ColumnNewRedux = ({ showLoadMore = true, shuffle = false, userId = null, itemType = false }) => {
 
     const dispatch = useDispatch();
-    const nftItems = useSelector(selectors.nftItems);
-    const nfts = nftItems ? shuffle ? shuffleArray(nftItems) : nftItems : [];
+    // const nftItems = useSelector(selectors.nftItems);
+    // const nfts = nftItems ? shuffle ? shuffleArray(nftItems) : nftItems : [];
+    // console.log("item=>", itemType)
+    const nftStateByUser = useSelector(selectors.nftStateByUser);
+    const _nfts = nftStateByUser.data ? shuffle ? shuffleArray(nftStateByUser.data) : [] : [];
+    const nfts = itemType && _nfts && _nfts.length> 0 ? _nfts.filter(element => element.status !== 'has_offers') : _nfts;
     const [height, setHeight] = useState(0);
 
     const onImgLoad = ({target:img}) => {
@@ -22,8 +26,8 @@ const ColumnNewRedux = ({ showLoadMore = true, shuffle = false, authorId = null 
     }
     
     useEffect(() => {
-        dispatch(actions.fetchNftsBreakdown(authorId));
-    }, [dispatch, authorId]);
+        dispatch(actions.fetchAllNftsByUser(userId));
+    }, [dispatch, userId]);
 
     //will run when component unmounted
     useEffect(() => {
@@ -34,18 +38,15 @@ const ColumnNewRedux = ({ showLoadMore = true, shuffle = false, authorId = null 
     },[dispatch]);
 
     const loadMore = () => {
-        dispatch(actions.fetchNftsBreakdown(authorId));
+        dispatch(actions.fetchAllNftsByUser(userId));
     }
 
     return (
         <div className='row'>
-            {nfts && nfts.map( (nft, index) => (
-                nft.category === 'music' ?
-                <NftMusicCard nft={nft} audioUrl={nft.audio_url} key={index} onImgLoad={onImgLoad} height={height} />
-                :
+            {nfts && nfts.length>=0? nfts.map((nft, index) => (
                 <NftCard nft={nft} key={index} onImgLoad={onImgLoad} height={height} />
-            ))}
-            { showLoadMore && nfts.length <= 20 &&
+            )) : <LoadingSpinner />}
+            { showLoadMore && nfts.length <= 10 &&
                 <div className='col-lg-12'>
                     <div className="spacer-single"></div>
                     <span onClick={loadMore} className="btn-main lead m-auto">Load More</span>

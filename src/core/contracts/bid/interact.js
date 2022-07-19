@@ -41,6 +41,12 @@ export const claimToken = async (auctionId) => {
   return {"claim_success": nftToken.status, "claim_status": nftToken.transactionHash}
 }
 
+export const refund = async(auctionId) => {
+  const nftToken = await marketplaceContract.methods.refund(auctionId).send({from: window.ethereum.selectedAddress});
+
+  return {"refund_success": nftToken.status, "refund_status": nftToken.transactionHash}
+}
+
 export const getCurrentBid = async(auctionId) => {
     const data = await marketplaceContract.methods.getCurrentBid(auctionId).call();
 

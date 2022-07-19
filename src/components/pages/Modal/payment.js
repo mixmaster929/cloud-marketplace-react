@@ -1,12 +1,12 @@
-import { Button, Modal, Tab, Tabs } from 'react-bootstrap';
+import { Modal, Tab, Tabs } from 'react-bootstrap';
 import React, { memo, useEffect, useState } from "react";
 import { createGlobalStyle } from 'styled-components';
-import { placeBid, getCurrentBid } from "../../../core/contracts/bid/interact";
+import { placeBid } from "../../../core/contracts/bid/interact";
+import { buyItem } from "../../../core/contracts/buy/interact";
 import LoadingSpinner from '../LoadingSpinner';
 import request from '../../../core/auth/request';
 import auth from '../../../core/auth';
 import api from '../../../core/api';
-import { useDispatch } from 'react-redux';
 
 const GlobalStyles = createGlobalStyle`
 	.modal-price1{
@@ -43,11 +43,11 @@ const GlobalStyles = createGlobalStyle`
 	}
 `;
 
-const Modals = ({ onClick, cardItem, maxPrice }) => {
+const Modals = ({ onClick, cardItem, maxPrice, type }) => {
 	const [value, setInitialAmount] = useState(maxPrice ? maxPrice : cardItem.price);
 	const [error, setError] = useState(true);
 	const [isLoading, setLoading] = useState(false);    //component loading
-	const dispatch = useDispatch();
+	
 	const handlePrice = (e) => {
 		setInitialAmount(e.target.value)
 		const diff = Number(e.target.value) - cardItem.price;
@@ -58,26 +58,43 @@ const Modals = ({ onClick, cardItem, maxPrice }) => {
 			setError(false)
 		}
 	}
-	const placeAuctionBid = async (e, index) => {
+	const callToBidAndBuy = async (e, index) => {
 		setLoading(true);
-		const { bid_success, bid_status, address } = await placeBid(String(value), index - 1)
-		if (bid_success) {
-			const userInfo = auth.getUserInfo();
-			const user_id = userInfo.id;
-			const nft_id = cardItem.id;
-			const nftbid = { user_id, nft_id, value, address }
+		const userInfo = auth.getUserInfo();
+		const user_id = userInfo.id;
+		if(type==="bid"){
+			const { bid_success, bid_status, address } = await placeBid(String(value), index - 1)
+			if (bid_success) {
+				const nft_id = cardItem.id;
+				const nftbid = { user_id, nft_id, value, address }
 
-			const requestURL = api.localbaseUrl +'/nftbid';
-			await request(requestURL, { method: 'POST', body: nftbid })
-				.then((response) => {
-					if (response.success) {
-						// dispatch(fetchAllNfts());
-					}
-				}).catch((err) => {
-					console.log(err);
-				}).finally(() => {
-					setLoading(false);
-				});
+				const requestURL = api.localbaseUrl +'/nftbid';
+				await request(requestURL, { method: 'POST', body: nftbid })
+					.then((response) => {
+						if (response.success) {
+						}
+					}).catch((err) => {
+						console.log(err);
+					}).finally(() => {
+						setLoading(false);
+					});
+			}
+		}
+		if(type==="buy"){
+			const { buy_success } = await buyItem(index, String(cardItem.price))
+			if(buy_success){
+				const nftbid = { user_id, index, "type": "buy" }
+				const requestURL = api.localbaseUrl +'/nfts';
+				await request(requestURL, { method: 'PUT', body: nftbid })
+					.then((response) => {
+						if (response.success) {
+						}
+					}).catch((err) => {
+						console.log(err);
+					}).finally(() => {
+						setLoading(false);
+					});
+			}
 		}
 	}
 
@@ -101,7 +118,7 @@ const Modals = ({ onClick, cardItem, maxPrice }) => {
 												<Tabs activeKey={tabKey} onSelect={(e) => initTabKey(e)}>
 													<Tab eventKey="one" title="ETH">
 														ETH<input type="number" className="modal-price1" autoFocus value={value} onChange={handlePrice} />
-														{error && <div className='error'>Amount is too low</div>}
+														{ type ==="bid" && error && <div className='error'>Amount is too low</div>}
 														<div>≈<span className="modal-price2">€{Number(cardItem.price) * Number(2000)}</span></div>
 														{/* <div style={{marginTop: '10px', marginBottom: '10px'}}>
 															<span className='add-payment1'>Payment method</span>
@@ -109,7 +126,7 @@ const Modals = ({ onClick, cardItem, maxPrice }) => {
 														</div> */}
 														<div className="btn-modal-footer">
 															{isLoading ? <LoadingSpinner /> :
-																<input type="button" id="bid-button" onClick={(e) => placeAuctionBid(e, cardItem.id)} className="btn-bid" value="Bid" disabled={error} />
+																<input type="button" id="bid-button" onClick={(e) => callToBidAndBuy(e, cardItem.id)} className="btn-bid" value={ type ==="bid"? "Bid" : "Buy" } disabled={type ==="bid" && error} />
 															}
 														</div>
 														<div style={{ marginTop: '10px', marginBottom: '10px' }}>
@@ -123,7 +140,7 @@ const Modals = ({ onClick, cardItem, maxPrice }) => {
 													</Tab>
 													<Tab eventKey="two" title="Credit Card">
 														ETH<input type="number" className="modal-price1" autoFocus value={value} onChange={handlePrice} />
-														{error && <div className='error'>Amount is too low</div>}
+														{type ==="bid" && error && <div className='error'>Amount is too low</div>}
 														<div>≈<span className="modal-price2">€{Number(cardItem.price) * Number(2000)}</span></div>
 														<div style={{ marginTop: '10px', marginBottom: '10px' }}>
 															<span className='add-payment1'>Payment method</span>

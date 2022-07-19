@@ -3,12 +3,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import Slider from "react-slick";
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import { settings, carouselCollection } from "./constants";
+import { carouselCollection, mysettings } from "./constants";
 import CustomSlide from "./CustomSlide";
 import * as selectors from '../../store/selectors';
 import { fetchAllNfts } from "../../store/actions/thunks";
 
-const CarouselCollectionRedux = () => {
+const NewCardCollectionRedux = () => {
   
 
   const dispatch = useDispatch();
@@ -18,16 +18,16 @@ const CarouselCollectionRedux = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       dispatch(fetchAllNfts());
-    }, 3000);
+    }, 2000);
 		return () => clearInterval(interval);
 	}, [dispatch]);
 
   return (
     <div className='nft'>
-      <Slider {...carouselCollection}>
+      <Slider {...mysettings}>
         {nfts && nfts.length > 0 && nfts.map((item, index) => (
           <CustomSlide
-            key={index}
+            key={item.id}
             card={item}
           />
         ))}
@@ -36,4 +36,4 @@ const CarouselCollectionRedux = () => {
   );
 }
 
-export default memo(CarouselCollectionRedux);
+export default memo(NewCardCollectionRedux);

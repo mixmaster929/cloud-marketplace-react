@@ -96,16 +96,7 @@ const CustomSlide = ({ card }) => {
   const [maxPrice, setMaxPrice] = useState(card.price)
   const [isLoading, setLoading] = useState(false);
   const [bidCounter, setBidCounter] = useState(0);
-  const [updated, setUpdated] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // const interval = setInterval(() => {
-    //   setRendering({})
-    // }, 3000);
-		// return () => clearInterval(interval);
-    // updateNFT(11)
-	}, []);
 
   useEffect(async () => {
     const currentBid = await getCurrentBid(card.id - 1);
@@ -123,7 +114,7 @@ const CustomSlide = ({ card }) => {
     if (showNFT) {
       const interval = setInterval(() => {
         const timestamp1 = Number(card.deadline_timestamp);
-        var timestamp2 = Math.round(new Date().getTime() / 1000);
+        const timestamp2 = Math.round(new Date().getTime() / 1000);
 
         if ((timestamp1 - timestamp2) < 5 && (timestamp1 - timestamp2) > 0) {
           setLoading(true)
@@ -149,7 +140,7 @@ const CustomSlide = ({ card }) => {
     const currentBid = await getCurrentBid(auctionId - 1);
     const currentBidOwner = await getCurrentBidOwner(auctionId - 1);
     const userInfo = auth.getUserInfo();
-    const data = { auctionId, currentBidOwner }
+    const data = { auctionId, currentBidOwner, "type": "bid" }
 
     if (currentBid) {
       const requestURL = api.localbaseUrl + '/nfts';
@@ -166,7 +157,7 @@ const CustomSlide = ({ card }) => {
         const isOpend = await isOpen(auctionId-1)
         if(!isOpend){
           console.log("auction ended")
-          // await claimToken(auctionId - 1)
+          await claimToken(auctionId - 1)
         }
       }
     }
@@ -189,7 +180,7 @@ const CustomSlide = ({ card }) => {
       <GlobalStyles />
       {isLoading ? <LoadingSpinner /> :
         showNFT && <div className='itm' index={card.id}>
-          {toggleModal && <Modals onClick={() => handleClose()} cardItem={card} maxPrice={maxPrice} />}
+          {toggleModal && <Modals onClick={() => handleClose()} cardItem={card} maxPrice={maxPrice} type="bid" />}
           <div className="nft_coll" >
             <div className="nft_wrap" onClick={() => goNFTDetail(card.id)}>
               <span><img src={card.preview_image} className="lazy img-fluid" alt="" /></span>

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import ScrollToTopBtn from './menu/ScrollToTop';
 import Header from './menu/header';
@@ -14,7 +14,7 @@ import Author from './pages/Author';
 import Login from './pages/login';
 import Register from './pages/register';
 import Create from './pages/create';
-import CreateOne from './pages/Create/index'
+import CreateOne from './pages/createone'
 import Createoption from './pages/createOptions';
 import Activity from './pages/activity';
 import Minter from './pages/Minter';
@@ -41,36 +41,6 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const App = () => {
-
-  useEffect(() => {
-    window.onbeforeunload = function (e) {
-      window.onunload = function () {
-        // localStorage.clear()
-        // window.localStorage.isMySessionActive = "false";
-      }
-      return undefined;
-    };
-
-    window.onload = function () {
-      // window.localStorage.isMySessionActive = "true";
-    };
-    // const handleTabClose = event => {
-    //   event.preventDefault();
-
-    //   localStorage.clear();
-    //   localStorage.isMySessionActive = 'false';
-
-    //   return (event.returnValue = undefined);
-    // };
-    // window.addEventListener('beforeunload', handleTabClose);
-
-    // window.addEventListener('beforeonload', handleTabClose);
-
-    // return () => {
-    //   window.removeEventListener('beforeunload', handleTabClose);
-    // };
-
-  }, []);
   return (
     <div className="wraper">
       <GlobalStyles />
@@ -86,6 +56,10 @@ const App = () => {
 
         <Route path="/create"
           element={<ProtectedRoute><Create /></ProtectedRoute>}
+        />
+
+        <Route path="/createone/:id"
+          element={<ProtectedRoute><CreateOne /></ProtectedRoute>}
         />
 
         <Route path="/collections"
@@ -106,18 +80,19 @@ const App = () => {
         <Route path="/settings/*"
           element={<ProtectedRoute><Settings /></ProtectedRoute>}
         />
+        <Route element={<ProtectedRoute><ItemDetailRedux /></ProtectedRoute>} path="/ItemDetail/:nftId" />
         <Route element={<ProtectedRoute><Explore2 /></ProtectedRoute>} path="/explore/:category/:id" />
+
         <Route element={<RankingRedux />} path="/rangking" />
         <Route element={<Auction />} path="/Auction" />
         <Route element={<Helpcenter />} path="/helpcenter" />
-        <Route element={<ItemDetailRedux />} path="/ItemDetail/:nftId" />
+
         <Route element={<Login />} path="/login" />
         <Route element={<Register />} path="/register" />
         <Route element={<Createoption />} path="/createOptions" />
         <Route element={<Activity />} path="/activity" />
         <Route element={<Minter />} path="/mint" />
         <Route element={<CreateNft />} path="/createNft" />
-        <Route element={<CreateOne />} path="/createone" />
       </Routes>
       <ScrollToTopBtn />
     </div>

@@ -64,6 +64,7 @@ export const fetchNftDetail = (nftId) => async (dispatch) => {
   }
 };
 
+
 export const fetchAllNfts = () => async (dispatch) => {
   dispatch(actions.getNftsList.request(Canceler.cancel));
 
@@ -85,13 +86,12 @@ export const fetchAllNfts = () => async (dispatch) => {
   }
 };
 
-export const fetchAllNftsByFilter = (filter) => async (dispatch) => {
-
-  dispatch(actions.getNftsList.request(Canceler.cancel));
+export const fetchAllNftsByFilter = (filter, collection_id) => async (dispatch) => {
+  dispatch(actions.getNftsListByFilter.request(Canceler.cancel));
 
   try {
     const jwt = auth.getToken();
-    const requestURL = api.localbaseUrl + '/nfts/' + filter;
+    const requestURL = api.localbaseUrl + '/nftsByFilter/' + filter + "/" + collection_id;
 
     const { data } = await Axios.get(requestURL, {
       headers: {
@@ -101,8 +101,51 @@ export const fetchAllNftsByFilter = (filter) => async (dispatch) => {
       params: {}
     });
 
-    dispatch(actions.getNftsList.success(data.data));
+    dispatch(actions.getNftsListByFilter.success(data.data));
   } catch (err) {
-    dispatch(actions.getNftsList.failure(err));
+    dispatch(actions.getNftsListByFilter.failure(err));
+  }
+};
+
+export const fetchAllNftsByFilter1 = (filter) => async (dispatch) => {
+  dispatch(actions.getNftsListByFilter1.request(Canceler.cancel));
+
+  try {
+    const jwt = auth.getToken();
+    const requestURL = api.localbaseUrl + '/nftsByFilter/' + filter;
+
+    const { data } = await Axios.get(requestURL, {
+      headers: {
+				Authorization: `Bearer ${jwt}`,
+			},
+      cancelToken: Canceler.token,
+      params: {}
+    });
+
+    dispatch(actions.getNftsListByFilter1.success(data.data));
+  } catch (err) {
+    dispatch(actions.getNftsListByFilter1.failure(err));
+  }
+};
+
+export const fetchAllNftsByUser = (userId) => async (dispatch) => {
+  dispatch(actions.getNftsListByUser.request(Canceler.cancel));
+
+  try {
+    const jwt = auth.getToken();
+    // const userInfo = auth.getUserInfo();
+    const requestURL = api.localbaseUrl + '/nftsByUser/' + userId;
+    
+    const { data } = await Axios.get(requestURL, {
+      headers: {
+				Authorization: `Bearer ${jwt}`,
+			},
+      cancelToken: Canceler.token,
+      params: {}
+    });
+
+    dispatch(actions.getNftsListByUser.success(data.data));
+  } catch (err) {
+    dispatch(actions.getNftsListByUser.failure(err));
   }
 };

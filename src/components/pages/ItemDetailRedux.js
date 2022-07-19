@@ -6,6 +6,7 @@ import { createGlobalStyle } from 'styled-components';
 import * as selectors from '../../store/selectors';
 import { fetchNftDetail } from "../../store/actions/thunks";
 import api from "../../core/api";
+import auth from "../../core/auth";
 import moment from "moment";
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -48,6 +49,33 @@ const GlobalStyles = createGlobalStyle`
       display: flex;
       align-items: center;
     }
+  }
+	.nft-price{
+		color: #0d0c22;
+    font-weight: bold;
+    font-size: 28px;
+    padding-right: 10px;
+	}
+	.nft-price-img{
+		width: 24px;
+    height: 24px;
+    margin-top: -12px;
+    margin-right: 5px;
+	}
+  .btn-sell{
+    float: right;
+    width: max-content;
+    text-align: center;
+    color: #fff !important;
+    background: rgb(0, 154, 213);
+    border-radius: 6px;
+    letter-spacing: normal;
+    outline: 0;
+    font-weight: 800;
+    text-decoration: none;
+    padding: 8px 40px;
+    font-size: 16px;
+    border: none
   }
   @media only screen and (max-width: 1199px) {
     .navbar{
@@ -98,7 +126,7 @@ const ItemDetailRedux = () => {
 	const nftDetailState = useSelector(selectors.nftDetailState);
 	const nft = nftDetailState.data ? nftDetailState.data[0] : [];
 	const users = nftDetailState.data ? nftDetailState.data[1] : [];
-	console.log("nft detail=>", nft)
+	// console.log("nft detail=>", nft)
 
 	const [openCheckout, setOpenCheckout] = React.useState(false);
 	const [openCheckoutbid, setOpenCheckoutbid] = React.useState(false);
@@ -106,6 +134,14 @@ const ItemDetailRedux = () => {
 	useEffect(() => {
 		dispatch(fetchNftDetail(nftId));
 	}, [dispatch, nftId]);
+
+	const navigate = useNavigate();
+	const navigateTo = (link) => {
+		console.log("link=>", link)
+		navigate(link);
+	}
+
+	const userInfo = auth.getUserInfo();
 
 	return (
 		<div>
@@ -117,14 +153,17 @@ const ItemDetailRedux = () => {
 					</div>
 					<div className="col-md-6">
 						<div className="item_info">
-							{nft.status === 'on_auction' &&
-								<>
-									Auctions ends in
-									<div className="de_countdown">
-										<Clock deadline={nft.deadline} />
-									</div>
-								</>
-							}
+							<div className="auction-detail">
+								{nft.status === 'on_auction' &&
+									<>
+										Auctions ends in
+										<div className="de_countdown">
+											<Clock deadline={nft.deadline} />
+										</div>
+									</>
+								}
+								{(userInfo.id === nft.user_id) && <input type="button" className="btn-sell" value="Sell" onClick={() => navigateTo("/createone/" + nft.id)} />}
+							</div>
 							<h2>{nft.title}</h2>
 							<div className="item_info_counts">
 								<div className="item_info_type"><i className="fa fa-image"></i>{nft.category}</div>
@@ -140,7 +179,7 @@ const ItemDetailRedux = () => {
 										<div className="author_list_pp">
 											<span>
 												{/* nft creator image */}
-												<img className="lazy" src={nft.users && nft.users.avatar? (api.publicUrl + "/uploads/profiles/" + nft.users.avatar) : '../../img/author_single/author_thumbnail.jpg'} alt="" />
+												<img className="lazy" src={nft.users && nft.users.avatar ? (api.publicUrl + "/uploads/profiles/" + nft.users.avatar) : '../../img/author_single/author_thumbnail.jpg'} alt="" />
 												<i className="fa fa-check"></i>
 											</span>
 										</div>
@@ -185,7 +224,7 @@ const ItemDetailRedux = () => {
 													<div className="item_author">
 														<div className="author_list_pp">
 															<span>
-																<img className="lazy" src={nft.users && nft.users.avatar? (api.publicUrl + "/uploads/profiles/" + nft.users.avatar) : '../../img/author_single/author_thumbnail.jpg'} alt="" />
+																<img className="lazy" src={nft.users && nft.users.avatar ? (api.publicUrl + "/uploads/profiles/" + nft.users.avatar) : '../../img/author_single/author_thumbnail.jpg'} alt="" />
 																<i className="fa fa-check"></i>
 															</span>
 														</div>
@@ -271,13 +310,13 @@ const ItemDetailRedux = () => {
 												<div className="p_list" key={index}>
 													<div className="p_list_pp">
 														<span>
-															<img className="lazy" src={nft.users && nft.users.avatar? (api.publicUrl + "/uploads/profiles/" + nft.users.avatar) : '../../img/author_single/author_thumbnail.jpg'} alt="" />
+															<img className="lazy" src={nft.users && nft.users.avatar ? (api.publicUrl + "/uploads/profiles/" + nft.users.avatar) : '../../img/author_single/author_thumbnail.jpg'} alt="" />
 															<i className="fa fa-check"></i>
 														</span>
 													</div>
 													<div className="p_list_info">
 														Bid {(bid.user_id === nft.user_id) && 'accepted'} <b>{bid.value} ETH</b>
-														<span>by <b>{users? users.find(element => element.id === bid.user_id).username : nft.users.username}</b> at {moment(bid.created_at).format('L, LT')}</span>
+														<span>by <b>{users ? users.find(element => element.id === bid.user_id).username : nft.users.username}</b> at {moment(bid.created_at).format('L, LT')}</span>
 													</div>
 												</div>
 											))}
@@ -302,8 +341,10 @@ const ItemDetailRedux = () => {
 											))}
 										</div>
 									)}
-
-
+									<div className="">
+										<h5>Price</h5>
+										<div className="nft-price"><img className="nft-price-img" src="../../img/misc/ethereum.svg" alt="" />{nft.price}<span>($250)</span></div>
+									</div>
 									{/* button for checkout */}
 									<div className="d-flex flex-row mt-5">
 										<button className='btn-main lead mb-5 mr15' onClick={() => setOpenCheckout(true)}>Buy Now</button>

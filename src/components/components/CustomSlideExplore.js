@@ -3,10 +3,11 @@ import { createGlobalStyle } from 'styled-components';
 import Clock from "./Clock";
 import Modals from '../pages/Modal/payment';
 import LoadingSpinner from '../pages/LoadingSpinner';
-import { claimToken, getCurrentBid, isOpen, getCurrentBidOwner } from '../../core/contracts/bid/interact'
+import { claimToken, getCurrentBid, isOpen, getCurrentBidOwner, refund } from '../../core/contracts/bid/interact'
 import request from '../../core/auth/request';
 import auth from '../../core/auth';
-import api from '../../../src/core/api'
+import api from '../../../src/core/api';
+import { useNavigate } from 'react-router-dom';
 
 const GlobalStyles = createGlobalStyle`
 .nft_coll{
@@ -95,18 +96,12 @@ const GlobalStyles = createGlobalStyle`
 
 const CustomSlideExplore = ({ card }) => {
   const [toggleModal, setToggleModal] = useState(false);
-  const [showNFT, setShowNFT] = useState(true);
   const [maxPrice, setMaxPrice] = useState(card.price)
   const [isLoading, setLoading] = useState(false);
   const [bidCounter, setBidCounter] = useState(0);
-  const [rendering, setRendering] = useState();
-
-  useEffect(() => {
-    // const interval = setInterval(() => {
-    //   setRendering({})
-    // }, 3000);
-		// return () => clearInterval(interval);
-	}, []);
+  const navigate = useNavigate();
+  const [refundFlag, setRefundFlag] = useState(false)
+  const [claimFlag, setClaimFlag] = useState(false)
 
   useEffect(async () => {
     const currentBid = await getCurrentBid(card.id - 1);
@@ -121,7 +116,6 @@ const CustomSlideExplore = ({ card }) => {
 
   
   useEffect(() => {
-    if (showNFT) {
       const interval = setInterval(() => {
         const timestamp1 = Number(card.deadline_timestamp);
         var timestamp2 = Math.round(new Date().getTime() / 1000);
@@ -130,48 +124,20 @@ const CustomSlideExplore = ({ card }) => {
           setLoading(true)
         }
         if ((timestamp1 - timestamp2) === 0) {
+          
           clearInterval(interval)
-          updateNFT(card.id)
+          localStorage.setItem("NFT_" + card.id, card);
+          console.log(localStorage.getItem("NFT_" + card.id))
           setLoading(false)
         }
         if((timestamp1 - timestamp2) < 0){
           clearInterval(interval)
-          setShowNFT(false)
           return;
         }
 
       }, 1000);
       return () => clearInterval(interval);
-    }
   }, []);
-
-  const updateNFT = async (auctionId) => {
-    console.log("updateNFT ended")
-    const currentBid = await getCurrentBid(auctionId - 1);
-    const currentBidOwner = await getCurrentBidOwner(auctionId - 1);
-    const userInfo = auth.getUserInfo();
-    const data = { auctionId, currentBidOwner }
-
-    if (currentBid) {
-      const requestURL = api.localbaseUrl + '/nfts';
-      await request(requestURL, { method: 'PUT', body: data })
-        .then((response) => {
-        }).catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-      console.log("userInfo.email=>", userInfo.email)
-      if (userInfo.email === 'smart.topdev929@gmail.com'){
-        const isOpend = await isOpen(auctionId-1)
-        if(!isOpend){
-          console.log("auction ended")
-          // await claimToken(auctionId - 1)
-        }
-      }
-    }
-  }
 
   const openBidModal = (e) => {
     setToggleModal(true)
@@ -181,14 +147,18 @@ const CustomSlideExplore = ({ card }) => {
     setToggleModal(value)
   }
 
+  const goNFTDetail = (id) => {
+    navigate("/ItemDetail/" + id);
+  }
+
   return (
     <div>
       <GlobalStyles />
       {isLoading ? <LoadingSpinner /> :
-        showNFT && <div className='itm' index={card.id}>
-          {toggleModal && <Modals onClick={() => handleClose()} cardItem={card} maxPrice={maxPrice} />}
+        <div className='itm' index={card.id}>
+          {toggleModal && <Modals onClick={() => handleClose()} cardItem={card} maxPrice={maxPrice} type="bid"/>}
           <div className="nft_coll">
-            <div className="nft_wrap">
+            <div className="nft_wrap" onClick={() => goNFTDetail(card.id)}>
               <span><img src={card.preview_image} className="lazy img-fluid" alt="" /></span>
             </div>
             <div className="nft_coll_pp">
