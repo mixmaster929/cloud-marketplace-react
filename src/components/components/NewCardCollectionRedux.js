@@ -14,11 +14,11 @@ const NewCardCollectionRedux = () => {
   const dispatch = useDispatch();
   const nftState = useSelector(selectors.nftState);
 	const nfts = nftState.data ? nftState.data : {};
-  
+  console.log("nfts=>", nfts)
   useEffect(() => {
     const interval = setInterval(() => {
       dispatch(fetchAllNfts());
-    }, 2000);
+    }, 3000);
 		return () => clearInterval(interval);
 	}, [dispatch]);
 

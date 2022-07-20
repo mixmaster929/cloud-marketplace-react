@@ -49,10 +49,10 @@ const CustomSlideBestDeal = ({ card }) => {
     <div>
       <GlobalStyles />
         <div className='itm' index={card.id}>
-          {toggleModal && <Modals onClick={() => handleClose()} cardItem={card} maxPrice={card.price} type="buy" />}
+          {toggleModal && <Modals onClick={() => handleClose()} cardItem={card} maxPrice={card.price} item_type="buy" />}
           <div className="d-item">
             <div className="nft__item">
-              <div className="nft__item_wrap" style={{ height: `${height}px` }}>
+              <div onClick={() => goNFTDetail(card.id)} className="nft__item_wrap" style={{ height: `${height}px` }}>
                 <Outer>
                   <span>
                     <img src={card.preview_image} className="lazy nft__item_preview" onLoad={onImgLoad} alt="" />
@@ -60,7 +60,7 @@ const CustomSlideBestDeal = ({ card }) => {
                 </Outer>
               </div>
               <div className="nft__item_info">
-                <span onClick={() => window.open("/", "_self")}>
+                <span onClick={() => goNFTDetail(card.id)}>
                   <h4>{card.title}</h4>
                 </span>
                 <div className="nft__item_price">

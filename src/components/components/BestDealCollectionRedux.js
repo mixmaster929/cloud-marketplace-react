@@ -17,7 +17,7 @@ const BestDealCollectionRedux = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       dispatch(fetchAllNftsByFilter("transfers", 0));
-    }, 2000);
+    }, 3000);
 		return () => clearInterval(interval);
 	}, [dispatch]);
 

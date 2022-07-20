@@ -87,27 +87,30 @@ const Createpage = () => {
     setPrice(e.target.value)
   }
 
-  const createBuyItem = async(index) => {
+  const createBuyItem = (index) => {
     setLoading(true)
-    const { buy_approve_success } = await buyApprove(index)
-    if(buy_approve_success){
-      const { buy_list_success } = await buyListItem(index, price)
-      if(buy_list_success){
-        const requestURL = api.localbaseUrl +'/nfts';
-        // const nftDetail = { index, price }
-        const data = { index, price, "type": "ready" }
-        await request(requestURL, { method: 'PUT', body: data })
-          .then((response) => {
-              if(response.success){
-                setLoading(false)
-                NotificationManager.success('Minted successfully!');
-              }
-          }).catch((err) => {
-              console.log(err);
-              NotificationManager.error('Failed to save data to database!');
-          });
+    const fetchData = async() => {
+      const { buy_approve_success } = await buyApprove(index)
+      if(buy_approve_success){
+        const { buy_list_success } = await buyListItem(index, price)
+        if(buy_list_success){
+          const requestURL = api.localbaseUrl +'/nfts';
+          // const nftDetail = { index, price }
+          const data = { index, price, "item_type": "ready" }
+          await request(requestURL, { method: 'PUT', body: data })
+            .then((response) => {
+                if(response.success){
+                  setLoading(false)
+                  NotificationManager.success('Minted successfully!');
+                }
+            }).catch((err) => {
+                console.log(err);
+                NotificationManager.error('Failed to save data to database!');
+            });
+        }
       }
     }
+    fetchData()
   }
 
   return (

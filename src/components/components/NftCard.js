@@ -42,13 +42,13 @@ const NftCard = ({ nft, className = 'd-item col-lg-3 col-md-6 col-sm-6 col-xs-12
                 }
                 {/* { nft.users && nft.users.avatar && */}
                     <div className="author_list_pp">
-                        <span onClick={()=> navigateTo(nft.author_link)}>                                    
+                        <span>                                    
                             <img className="lazy" src={nft.users && nft.users.avatar? (api.publicUrl + "/uploads/profiles/" + nft.users.avatar) : '../../img/author_single/author_thumbnail.jpg'} alt=""/>
                             <i className="fa fa-check"></i>
                         </span>
                     </div>
                 {/* } */}
-                <div className="nft__item_wrap" style={{height: `${height}px`}}>
+                <div onClick={()=> navigateTo("/ItemDetail/" + `${nft.id}`)} className="nft__item_wrap" style={{height: `${height}px`}}>
                 <Outer>
                     <span>
                         <img onLoad={onImgLoad} src={nft.preview_image} className="lazy nft__item_preview" alt=""/>

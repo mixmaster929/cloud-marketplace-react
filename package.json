@@ -80,5 +80,6 @@
   },
   "devDependencies": {
     "msw": "^0.35.0"
-  }
+  },
+  "proxy": "https://nftbackend.fanball365.com"
 }

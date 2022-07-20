@@ -114,30 +114,86 @@ const CustomSlideExplore = ({ card }) => {
     setMaxPrice(max)
   }, [card]);
 
-  
+
   useEffect(() => {
-      const interval = setInterval(() => {
-        const timestamp1 = Number(card.deadline_timestamp);
-        var timestamp2 = Math.round(new Date().getTime() / 1000);
+    const interval = setInterval(() => {
+      const timestamp1 = Number(card.deadline_timestamp);
+      const timestamp2 = Math.round(new Date().getTime() / 1000);
 
-        if ((timestamp1 - timestamp2) < 5 && (timestamp1 - timestamp2) > 0) {
-          setLoading(true)
-        }
-        if ((timestamp1 - timestamp2) === 0) {
-          
-          clearInterval(interval)
-          localStorage.setItem("NFT_" + card.id, card);
-          console.log(localStorage.getItem("NFT_" + card.id))
-          setLoading(false)
-        }
-        if((timestamp1 - timestamp2) < 0){
-          clearInterval(interval)
-          return;
-        }
+      if ((timestamp1 - timestamp2) < 5 && (timestamp1 - timestamp2) > 0) {
+        setLoading(true)
+      }
+      if ((timestamp1 - timestamp2) === 0) {
 
-      }, 1000);
-      return () => clearInterval(interval);
+        clearInterval(interval)
+        updateNFT(card.id)
+        setLoading(false)
+      }
+      if ((timestamp1 - timestamp2) < 0) {
+        updateNFT(card.id)
+        clearInterval(interval)
+        return;
+      }
+
+    }, 1000);
+    return () => clearInterval(interval);
   }, []);
+
+  const updateNFT = (tokenId) => {
+    const updateData = async () => {
+      const currentBid = await getCurrentBid(tokenId - 1);
+      const currentBidOwner = await getCurrentBidOwner(tokenId - 1);
+
+      if (currentBid[1] === "0") {//refund
+        const data = { tokenId, userId: 1, "item_type": "REFUND" }
+        const requestURL = api.localbaseUrl + '/nfts';
+        await request(requestURL, { method: 'PUT', body: data })
+          .then((response) => {
+          }).catch((err) => {
+            console.log(err);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+        
+        const requestURL1 = api.localbaseUrl + '/notification';
+        await request(requestURL1, { method: 'POST', body: data })
+          .then((response) => {
+          }).catch((err) => {
+            console.log(err);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      }
+      else {//claim nft, token
+        const data = { tokenId, currentBidOwner, "item_type": "NFT" }
+        
+        const isOpend = await isOpen(tokenId - 1)
+        if (!isOpend) {
+          const requestURL = api.localbaseUrl + '/nfts';
+          await request(requestURL, { method: 'PUT', body: data })
+            .then((response) => {
+            }).catch((err) => {
+              console.log(err);
+            })
+            .finally(() => {
+              setLoading(false);
+            });
+            const requestURL1 = api.localbaseUrl + '/notification';
+            await request(requestURL1, { method: 'POST', body: data })
+            .then((response) => {
+            }).catch((err) => {
+              console.log(err);
+            })
+            .finally(() => {
+              setLoading(false);
+            });
+        }
+      }
+    }
+    updateData()
+  }
 
   const openBidModal = (e) => {
     setToggleModal(true)
@@ -156,7 +212,7 @@ const CustomSlideExplore = ({ card }) => {
       <GlobalStyles />
       {isLoading ? <LoadingSpinner /> :
         <div className='itm' index={card.id}>
-          {toggleModal && <Modals onClick={() => handleClose()} cardItem={card} maxPrice={maxPrice} type="bid"/>}
+          {toggleModal && <Modals onClick={() => handleClose()} cardItem={card} maxPrice={maxPrice} item_type="NFT" />}
           <div className="nft_coll">
             <div className="nft_wrap" onClick={() => goNFTDetail(card.id)}>
               <span><img src={card.preview_image} className="lazy img-fluid" alt="" /></span>

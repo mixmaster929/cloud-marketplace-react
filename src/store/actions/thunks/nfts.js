@@ -70,7 +70,7 @@ export const fetchAllNfts = () => async (dispatch) => {
 
   try {
     
-    const requestURL = api.localbaseUrl + '/nfts/';
+    const requestURL = api.localbaseUrl + '/nfts';
 
     const { data } = await Axios.get(requestURL, {
       headers: {

@@ -28,6 +28,9 @@ export const hotCollectionsState = (state) => state.hotCollection.hotCollections
 export const authorsState = (state) => state.authors.authorList;
 export const authorRankingsState = (state) => state.authors.authorRanking;
 
+//notification
+export const notificationsState = (state) => state.notification.notificationList;
+
 //blogs
 export const blogsState = (state) => state.blogs.blogPosts;
 export const recentPostsState = (state) => state.blogs.recentPosts;

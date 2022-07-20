@@ -18,6 +18,7 @@ export const fetchCategoryList = () => async (dispatch) => {
       cancelToken: Canceler.token,
       params: {}
     });
+    // console.log("data=>", data)
     dispatch(actions.getCategoryList.success(data.data));
   } catch (err) {
     dispatch(actions.getCategoryList.failure(err));

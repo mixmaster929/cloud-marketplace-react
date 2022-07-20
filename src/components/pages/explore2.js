@@ -76,7 +76,7 @@ const Explore = () => {
     const interval = setInterval(() => {
       dispatch(fetchAllNftsByFilter(category, id));
       dispatch(fetchAllNftsByFilter1(category));
-    }, 2000);
+    }, 5000);
     return () => clearInterval(interval);
   }, [dispatch, location]);
 

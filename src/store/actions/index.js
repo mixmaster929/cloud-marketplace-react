@@ -69,6 +69,12 @@ export const getCategoryList = asyncAction(
     'nft/GET_CATEGORY_LIST_FAIL'
 )();
 
+export const getNotificationList = asyncAction(
+    'nft/GET_NOTIFICATION_LIST',
+    'nft/GET_NOTIFICATION_LIST_SUCCESS',
+    'nft/GET_NOTIFICATION_LIST_FAIL'
+)();
+
 export const getCollectionList = asyncAction(
     'nft/GET_COLLECTION_LIST',
     'nft/GET_COLLECTION_LIST_SUCCESS',

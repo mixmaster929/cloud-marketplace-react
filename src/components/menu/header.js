@@ -10,11 +10,13 @@ import useOnclickOutside from "react-cool-onclickoutside";
 import auth from '../../core/auth';
 import { createGlobalStyle } from 'styled-components';
 import api from "../../core/api";
-import { fetchAuthorList } from "../../../src/store/actions/thunks";
+import { fetchAuthorList, fetchNotificationList } from "../../../src/store/actions/thunks";
 import * as selectors from '../../../src/store/selectors';
 import { useSelector, useDispatch } from 'react-redux';
 import Select from 'react-select';
 import { useTranslation } from "react-i18next";
+import request from '../../core/auth/request';
+import { claimNFT, refund } from '../../core/contracts/bid/interact'
 
 const GlobalStyles = createGlobalStyle`
 .mainside a {
@@ -102,12 +104,22 @@ const Header = function ({ className }) {
   const userInfo = auth.getUserInfo();
   const authorId = userInfo ? userInfo.id : 0;
   const authorsState = useSelector(selectors.authorsState);
-  const author = authorsState.data ? authorsState.data : null;
+  const author = authorsState.data ? authorsState.data : [];
+
+  const notificationsState = useSelector(selectors.notificationsState);
+  const notifications = notificationsState.data ? notificationsState.data : [];
+
   const defaultLanguage = localStorage.getItem("language");
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchAuthorList(authorId));
+    if(userInfo){
+      const interval = setInterval(() => {
+        dispatch(fetchNotificationList(authorId));
+      }, 5000);
+      return () => clearInterval(interval);
+    }
   }, [dispatch, authorId]);
 
 
@@ -124,6 +136,34 @@ const Header = function ({ className }) {
     localStorage.setItem("language", event.value);
     i18n.changeLanguage(event.value);
   };
+
+  const getWhenTime = (_datetime) => {
+    return "10 mins"
+  }
+
+  const goTransaction = (item) => {
+    const fetchDate = async () => {
+      let result = false
+      if (item.item_type === 'REFUND') {
+        result = await refund(item.nft_id - 1);
+      }
+      if (item.item_type === 'NFT') {
+        result = await claimNFT(item.nft_id - 1);
+      }
+      const requestURL = api.localbaseUrl + '/notification/' + item.id;
+      if (result['success']) {
+        await request(requestURL, { method: 'PUT' })
+          .then((response) => {
+          }).catch((err) => {
+            console.log(err);
+          })
+          .finally(() => {
+            // setLoading(false);
+          });
+      }
+    }
+    fetchDate()
+  }
 
   return (
     <div>
@@ -194,7 +234,7 @@ const Header = function ({ className }) {
                 :
                 (<div className="logout">
                   <div id="de-click-menu-notification" className="de-menu-notification" onClick={() => btn_icon_not(!shownot)} ref={refpopnot}>
-                    <div className="d-count">8</div>
+                  {notifications && notifications.length > 0 && <div className="d-count">{notifications.length}</div>}
                     <i className="fa fa-bell"></i>
                     {shownot &&
                       <div className="popshow">
@@ -203,51 +243,16 @@ const Header = function ({ className }) {
                           <span className="viewaall">Show all</span>
                         </div>
                         <ul>
-                          <li>
-                            <div className="mainnot">
-                              <img className="lazy" src="../../img/author/author-2.jpg" alt="" />
-                              <div className="d-desc">
-                                <span className="d-name"><b>Mamie Barnett</b> started following you</span>
-                                <span className="d-time">1 hour ago</span>
+                          {notifications && notifications.length > 0 && notifications.map((item) => (
+                            <li key={item.id}>
+                              <div className="mainnot">
+                                <img className="lazy" src="../../img/author/author-2.jpg" alt="" />
+                                <div className="d-desc">
+                                  <span className="d-name">You have a <span onClick={(e) => goTransaction(item)}><b>{item.item_type}</b></span> transaction</span>
+                                  <span className="d-time">{getWhenTime(item.created_at)} ago</span>
+                                </div>
                               </div>
-                            </div>
-                          </li>
-                          <li>
-                            <div className="mainnot">
-                              <img className="lazy" src="../../img/author/author-3.jpg" alt="" />
-                              <div className="d-desc">
-                                <span className="d-name"><b>Nicholas Daniels</b> liked your item</span>
-                                <span className="d-time">2 hours ago</span>
-                              </div>
-                            </div>
-                          </li>
-                          <li>
-                            <div className="mainnot">
-                              <img className="lazy" src="../../img/author/author-4.jpg" alt="" />
-                              <div className="d-desc">
-                                <span className="d-name"><b>Lori Hart</b> started following you</span>
-                                <span className="d-time">18 hours ago</span>
-                              </div>
-                            </div>
-                          </li>
-                          <li>
-                            <div className="mainnot">
-                              <img className="lazy" src="../../img/author/author-5.jpg" alt="" />
-                              <div className="d-desc">
-                                <span className="d-name"><b>Jimmy Wright</b> liked your item</span>
-                                <span className="d-time">1 day ago</span>
-                              </div>
-                            </div>
-                          </li>
-                          <li>
-                            <div className="mainnot">
-                              <img className="lazy" src="../../img/author/author-6.jpg" alt="" />
-                              <div className="d-desc">
-                                <span className="d-name"><b>Karla Sharp</b> started following you</span>
-                                <span className="d-time">3 days ago</span>
-                              </div>
-                            </div>
-                          </li>
+                            </li>))}
                         </ul>
                       </div>
                     }
@@ -309,7 +314,7 @@ const Header = function ({ className }) {
                     }
                   </div>
                   <div className="multi-language">
-                    <Select id="multi-language" onChange={changeLanguage} options={setLanguages} defaultValue={defaultLanguage? setLanguages.find(item => item.value === defaultLanguage) : setLanguages[0] } />
+                    <Select id="multi-language" onChange={changeLanguage} options={setLanguages} defaultValue={defaultLanguage ? setLanguages.find(item => item.value === defaultLanguage) : setLanguages[0]} />
                   </div>
                 </div>)
               }

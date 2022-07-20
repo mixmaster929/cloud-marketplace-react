@@ -31,20 +31,20 @@ export const placeBid = async (initialBid, auctionId) => {
 export const claimNFT = async (auctionId) => {
   const nftToken = await marketplaceContract.methods.claimNFT(auctionId).send({from: window.ethereum.selectedAddress})
 
-  return {"claim_success": nftToken.status, "claim_status": nftToken.transactionHash}
+  return {"success": nftToken.status, "claim_status": nftToken.transactionHash}
 }
 // For Auction Creator
 export const claimToken = async (auctionId) => {
   
   const nftToken = await marketplaceContract.methods.claimToken(auctionId).send({from: window.ethereum.selectedAddress})
 
-  return {"claim_success": nftToken.status, "claim_status": nftToken.transactionHash}
+  return {"success": nftToken.status, "claim_status": nftToken.transactionHash}
 }
 
 export const refund = async(auctionId) => {
   const nftToken = await marketplaceContract.methods.refund(auctionId).send({from: window.ethereum.selectedAddress});
 
-  return {"refund_success": nftToken.status, "refund_status": nftToken.transactionHash}
+  return {"success": nftToken.status, "refund_status": nftToken.transactionHash}
 }
 
 export const getCurrentBid = async(auctionId) => {
@@ -61,6 +61,5 @@ export const getCurrentBidOwner = async(auctionId) => {
 
 export const isOpen = async(auctionId) => {
   const data = await marketplaceContract.methods.isOpen(auctionId).call();
-
   return data;
 }

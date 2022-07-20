@@ -67,12 +67,14 @@ const Logintwo = () => {
   const navigate = useNavigate();
 
   const handleSubmitForm = async (data) => {
+    setLoading(true);
     const requestURL = loginUrl;
 
     await request(requestURL, { method: 'POST', body: data })
       .then((response) => {
         auth.setToken(response.data.remember_token, true);
         auth.setUserInfo(response.data, true);
+        setLoading(false);
         // if authenticated
         navigate("/home", { replace: true }); // redirect!!!
       }).catch((err) => {
@@ -105,10 +107,8 @@ const Logintwo = () => {
                       onSubmit={async (values, { setSubmitting, resetForm }) => {
                         // const submitData = pick(values, [...requiredFields]);
                         setSubmitting(true);
-                        setLoading(true);
                         await handleSubmitForm(values);
                         setSubmitting(false);
-                        setLoading(false);
                         resetForm();
                       }}
                     >

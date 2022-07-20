@@ -9,6 +9,7 @@ import api from "../../core/api";
 import auth from "../../core/auth";
 import moment from "moment";
 import { useNavigate, useParams } from 'react-router-dom';
+import { isOpen } from "../../core/contracts/bid/interact";
 
 const GlobalStyles = createGlobalStyle`
   header#myHeader.navbar.white {
@@ -127,13 +128,24 @@ const ItemDetailRedux = () => {
 	const nft = nftDetailState.data ? nftDetailState.data[0] : [];
 	const users = nftDetailState.data ? nftDetailState.data[1] : [];
 	// console.log("nft detail=>", nft)
+	
 
 	const [openCheckout, setOpenCheckout] = React.useState(false);
 	const [openCheckoutbid, setOpenCheckoutbid] = React.useState(false);
-
+	const [sellFlag, setSellFlag] = React.useState(false);
 	useEffect(() => {
 		dispatch(fetchNftDetail(nftId));
 	}, [dispatch, nftId]);
+
+	const fetchData = async() =>{
+		const auction_id = nft.id - 1;
+		if(auction_id){
+			const flag = await isOpen(auction_id)
+			setSellFlag(flag)
+		}
+	}
+	fetchData();
+	console.log("flag->", sellFlag)
 
 	const navigate = useNavigate();
 	const navigateTo = (link) => {
@@ -162,7 +174,7 @@ const ItemDetailRedux = () => {
 										</div>
 									</>
 								}
-								{(userInfo.id === nft.user_id) && <input type="button" className="btn-sell" value="Sell" onClick={() => navigateTo("/createone/" + nft.id)} />}
+								{(userInfo.id === nft.user_id) && !sellFlag && <input type="button" className="btn-sell" value="Sell" onClick={() => navigateTo("/createone/" + nft.id)} />}
 							</div>
 							<h2>{nft.title}</h2>
 							<div className="item_info_counts">

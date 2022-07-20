@@ -6,6 +6,7 @@ import filterReducer from './filters';
 import blogPostsReducer from './blogs';
 import categoryReducer from './categories';
 import collectionReducer from './collections';
+import notificationReducer from './notification';
 
 export const rootReducer = combineReducers({
   NFT: nftReducer,
@@ -15,6 +16,7 @@ export const rootReducer = combineReducers({
   blogs: blogPostsReducer,
   categories: categoryReducer,
   collections: collectionReducer, 
+  notification: notificationReducer,
 });
 
 const reducers = (state, action) => rootReducer(state, action);

@@ -111,56 +111,84 @@ const CustomSlide = ({ card }) => {
 
   
   useEffect(() => {
-    if (showNFT) {
-      const interval = setInterval(() => {
-        const timestamp1 = Number(card.deadline_timestamp);
-        const timestamp2 = Math.round(new Date().getTime() / 1000);
+    const interval = setInterval(() => {
+      const timestamp1 = Number(card.deadline_timestamp);
+      const timestamp2 = Math.round(new Date().getTime() / 1000);
 
-        if ((timestamp1 - timestamp2) < 5 && (timestamp1 - timestamp2) > 0) {
-          setLoading(true)
-        }
-        if ((timestamp1 - timestamp2) === 0) {
-          clearInterval(interval)
-          updateNFT(card.id)
-          setLoading(false)
-        }
-        if((timestamp1 - timestamp2) < 0){
-          clearInterval(interval)
-          setShowNFT(false)
-          return;
-        }
+      if ((timestamp1 - timestamp2) < 5 && (timestamp1 - timestamp2) > 0) {
+        setLoading(true)
+      }
+      if ((timestamp1 - timestamp2) === 0) {
 
-      }, 1000);
-      return () => clearInterval(interval);
-    }
+        clearInterval(interval)
+        updateNFT(card.id)
+        setLoading(false)
+      }
+      if ((timestamp1 - timestamp2) < 0) {
+        updateNFT(card.id)
+        clearInterval(interval)
+        return;
+      }
+
+    }, 1000);
+    return () => clearInterval(interval);
   }, []);
 
-  const updateNFT = async (auctionId) => {
-    console.log("updateNFT ended")
-    const currentBid = await getCurrentBid(auctionId - 1);
-    const currentBidOwner = await getCurrentBidOwner(auctionId - 1);
-    const userInfo = auth.getUserInfo();
-    const data = { auctionId, currentBidOwner, "type": "bid" }
+  const updateNFT = (tokenId) => {
 
-    if (currentBid) {
-      const requestURL = api.localbaseUrl + '/nfts';
-      await request(requestURL, { method: 'PUT', body: data })
-        .then((response) => {
-        }).catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-      console.log("userInfo.email=>", userInfo.email)
-      if (userInfo.email === 'smart.topdev929@gmail.com'){
-        const isOpend = await isOpen(auctionId-1)
-        if(!isOpend){
-          console.log("auction ended")
-          await claimToken(auctionId - 1)
+    const updateData = async () => {
+      const currentBid = await getCurrentBid(tokenId - 1);
+      const currentBidOwner = await getCurrentBidOwner(tokenId - 1);
+
+      if (currentBid[1] === "0") {//refund
+        const data = { tokenId, userId: 1, "item_type": "REFUND" }
+        const requestURL = api.localbaseUrl + '/nfts';
+        await request(requestURL, { method: 'PUT', body: data })
+          .then((response) => {
+          }).catch((err) => {
+            console.log(err);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+        
+        const requestURL1 = api.localbaseUrl + '/notification';
+        await request(requestURL1, { method: 'POST', body: data })
+          .then((response) => {
+          }).catch((err) => {
+            console.log(err);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      }
+      else {//claim nft, token
+        const data = { tokenId, currentBidOwner, "item_type": "NFT" }
+        
+        const isOpend = await isOpen(tokenId - 1)
+        if (!isOpend) {
+          const requestURL = api.localbaseUrl + '/nfts';
+          await request(requestURL, { method: 'PUT', body: data })
+            .then((response) => {
+            }).catch((err) => {
+              console.log(err);
+            })
+            .finally(() => {
+              setLoading(false);
+            });
+            const requestURL1 = api.localbaseUrl + '/notification';
+            await request(requestURL1, { method: 'POST', body: data })
+            .then((response) => {
+            }).catch((err) => {
+              console.log(err);
+            })
+            .finally(() => {
+              setLoading(false);
+            });
         }
       }
     }
+    updateData()
   }
 
   const openBidModal = (e) => {
